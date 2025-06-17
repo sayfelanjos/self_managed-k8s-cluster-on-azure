@@ -1,36 +1,16 @@
-variable "location" {
-  description = "The Azure region where all resources in this example should be created."
-  type        = string
-}
-
 variable "resource_group_name" {
   description = "The name of the resource group."
   type        = string
 }
 
-variable "virtual_network_name" {
-  description = "The name of the virtual network."
+variable "location" {
+  description = "The Azure region where all resources in this example should be created."
   type        = string
-}
-
-variable "ip_address_space" {
-  description = "The address space for the virtual network."
-  type        = list(string)
-}
-
-variable "subnet_name" {
-  description = "The name of the subnet."
-  type        = string
-}
-
-variable "ip_address_prefixes" {
-  description = "The address prefixes for the subnet."
-  type        = list(string)
 }
 
 variable "vmss_name" {
-    description = "The name of the virtual machine scale set."
-    type = string
+  description = "The name of the virtual machine scale set."
+  type        = string
 }
 
 variable "vmss_sku" {
@@ -82,7 +62,7 @@ variable "os_disk_caching" {
   description = "The caching type for the OS disk."
   type        = string
 }
-variable "subnet_id" {
-    description = "The ID of the subnet where the virtual machine scale set will be deployed."
-    type        = string
+variable "public_subnet_id" {
+  description = "The ID of the subnet where the virtual machine scale set will be deployed."
+  type        = string
 }

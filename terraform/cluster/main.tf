@@ -1,50 +1,30 @@
-resource "azurerm_virtual_network" "example" {
-  name                = "example-network"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  address_space       = ["10.0.0.0/16"]
+locals {
+  public_key = file("~/.ssh/id_rsa.pub")
 }
 
-resource "azurerm_subnet" "internal" {
-  name                 = "internal"
-  resource_group_name  = azurerm_resource_group.example.name
-  virtual_network_name = azurerm_virtual_network.example.name
-  address_prefixes     = ["10.0.2.0/24"]
+resource "azurerm_resource_group" "k8s_cluster" {
+  name     = var.resource_group_name
+  location = var.location
 }
 
-resource "azurerm_linux_virtual_machine_scale_set" "example" {
-  name                = "example-vmss"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  sku                 = "Standard_F2"
-  instances           = 1
-  admin_username      = "adminuser"
-
-  admin_ssh_key {
-    username   = "adminuser"
-    public_key = local.first_public_key
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts"
-    version   = "latest"
-  }
-
-  os_disk {
-    storage_account_type = "Standard_LRS"
-    caching              = "ReadWrite"
-  }
-
-  network_interface {
-    name    = "example"
-    primary = true
-
-    ip_configuration {
-      name      = "internal"
-      primary   = true
-      subnet_id = azurerm_subnet.internal.id
-    }
-  }
+module "k8s-cluster" {
+  source              = "../modules/k8s-cluster"
+  resource_group_name = azurerm_resource_group.k8s_cluster.name
+  location            = azurerm_resource_group.k8s_cluster.location
+  vmss_name                      = var.vmss_name
+  vmss_instance_count            = var.vmss_instance_count
+  vmss_sku                       = var.vmss_sku
+  source_image_offer             = var.source_image_offer
+  source_image_publisher         = var.source_image_publisher
+  source_image_sku               = var.source_image_sku
+  source_image_version           = var.source_image_version
+  admin_username                 = var.admin_username
+  admin_ssh_key                  = local.public_key
+  vnet_name                      = var.vnet_name
+  vnet_address_space             = var.vnet_address_space
+  subnet_name                    = var.subnet_name
+  public_subnet_address_prefixes = var.public_subnet_address_prefixes
+  public_subnet_id               = module.k8s-cluster.public_subnet_id
+  os_disk_caching                = var.os_disk_caching
+  os_disk_storage_account_type   = var.os_disk_storage_account_type
 }
