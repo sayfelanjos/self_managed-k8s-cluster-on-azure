@@ -6,7 +6,11 @@ variable "location" {
   description = "The Azure region where the resources will be created."
   type        = string
 }
-variable "vmss_name" {
+variable "worker_nodes_name" {
+  description = "The name of the virtual machine scale set."
+  type        = string
+}
+variable "master_nodes_name" {
   description = "The name of the virtual machine scale set."
   type        = string
 }

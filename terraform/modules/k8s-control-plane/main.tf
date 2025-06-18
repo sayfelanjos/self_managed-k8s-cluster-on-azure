@@ -1,10 +1,10 @@
 resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
-  name                = var.vmss_name
+  name                = var.master_nodes_name
   resource_group_name = var.resource_group_name
   location            = var.location
   sku                 = var.vmss_sku
-  instances = var.vmss_instance_count
-  admin_username = var.admin_username
+  instances           = var.vmss_instance_count
+  admin_username      = var.admin_username
 
   admin_ssh_key {
     username   = var.admin_username
@@ -18,18 +18,18 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
     version   = var.source_image_version
   }
   os_disk {
-      caching                   = var.os_disk_caching
-      storage_account_type      = var.os_disk_storage_account_type
-      write_accelerator_enabled = true
+    caching                   = var.os_disk_caching
+    storage_account_type      = var.os_disk_storage_account_type
+    write_accelerator_enabled = false
   }
   network_interface {
-      name    = "k8s-master-nodes-nic"
-      primary = true
+    name    = "k8s-master-nodes-nic"
+    primary = true
 
-      ip_configuration {
+    ip_configuration {
       name      = "k8s-master-nodes-ipconfig"
       subnet_id = var.public_subnet_id
       primary   = true
-      }
+    }
   }
 }

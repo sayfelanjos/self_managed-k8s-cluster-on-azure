@@ -8,10 +8,11 @@ resource "azurerm_resource_group" "k8s_cluster" {
 }
 
 module "k8s-cluster" {
-  source              = "../modules/k8s-cluster"
-  resource_group_name = azurerm_resource_group.k8s_cluster.name
-  location            = azurerm_resource_group.k8s_cluster.location
-  vmss_name                      = var.vmss_name
+  source                         = "../modules/k8s-cluster"
+  resource_group_name            = azurerm_resource_group.k8s_cluster.name
+  location                       = azurerm_resource_group.k8s_cluster.location
+  master_nodes_name              = var.master_nodes_name
+  worker_nodes_name              = var.worker_nodes_name
   vmss_instance_count            = var.vmss_instance_count
   vmss_sku                       = var.vmss_sku
   source_image_offer             = var.source_image_offer

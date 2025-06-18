@@ -26,7 +26,11 @@ variable "public_subnet_id" {
   description = "The ID of the subnet."
   type        = string
 }
-variable "vmss_name" {
+variable "worker_nodes_name" {
+  description = "The name of the virtual machine scale set."
+  type        = string
+}
+variable "master_nodes_name" {
   description = "The name of the virtual machine scale set."
   type        = string
 }
