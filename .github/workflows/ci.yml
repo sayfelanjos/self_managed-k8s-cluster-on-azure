@@ -21,6 +21,7 @@ jobs:
       working-directory: terraform/cluster
       run: terraform init
       env:
+        TF_VAR_admin_public_key: ${{ secrets.ADMIN_SSH_KEY }}
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -30,6 +31,7 @@ jobs:
       working-directory: terraform/cluster
       run: terraform plan
       env:
+        TF_VAR_admin_public_key: ${{ secrets.ADMIN_SSH_KEY }}
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -39,6 +41,7 @@ jobs:
       working-directory: terraform/cluster
       run: terraform apply -auto-approve
       env:
+        TF_VAR_admin_public_key: ${{ secrets.ADMIN_SSH_KEY }}
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -61,6 +64,7 @@ jobs:
       working-directory: terraform/cluster
       run: terraform destroy -auto-approve
       env:
+        TF_VAR_admin_public_key: ${{ secrets.ADMIN_SSH_KEY }}
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -83,6 +87,7 @@ jobs:
       working-directory: terraform/cluster
       run: terraform apply -auto-approve
       env:
+        TF_VAR_admin_public_key: ${{ secrets.ADMIN_SSH_KEY }}
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
