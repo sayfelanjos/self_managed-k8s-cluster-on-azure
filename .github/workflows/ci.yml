@@ -85,7 +85,7 @@ jobs:
 
     - name: Terraform update
       working-directory: terraform/cluster
-      run: terraform apply -auto-approve
+      run: terraform apply -auto-approve -var="admin_ssh_key=${{ secrets.ADMIN_SSH_KEY }}"
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
