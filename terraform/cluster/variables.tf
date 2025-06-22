@@ -42,6 +42,10 @@ variable "admin_username" {
   description = "The admin username for the virtual machines."
   type        = string
 }
+variable "admin_ssh_key" {
+  description = "The public key for SSH access to the virtual machines."
+  type        = string
+}
 variable "os_disk_storage_account_type" {
   description = "The storage account type for the OS disk."
   type        = string

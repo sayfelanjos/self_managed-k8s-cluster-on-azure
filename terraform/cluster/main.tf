@@ -1,7 +1,3 @@
-locals {
-  public_key = file("~/.ssh/id_rsa.pub")
-}
-
 resource "azurerm_resource_group" "k8s_cluster" {
   name     = var.resource_group_name
   location = var.location
@@ -20,7 +16,7 @@ module "k8s-cluster" {
   source_image_sku               = var.source_image_sku
   source_image_version           = var.source_image_version
   admin_username                 = var.admin_username
-  admin_ssh_key                  = local.public_key
+  admin_ssh_key                  = var.admin_ssh_key
   vnet_name                      = var.vnet_name
   vnet_address_space             = var.vnet_address_space
   subnet_name                    = var.subnet_name

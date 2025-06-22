@@ -1,0 +1,17 @@
+resource_group_name            = "self-managed-k8s-cluster-rg"
+location                       = "eastus2"
+admin_username                 = "azureadmin"
+source_image_sku               = "22_04-lts-gen2"
+source_image_publisher         = "Canonical"
+source_image_offer             = "0001-com-ubuntu-server-jammy"
+source_image_version           = "latest"
+worker_nodes_name              = "workernode"
+master_nodes_name              = "masternode"
+vmss_sku                       = "Standard_D4s_v3"
+vmss_instance_count            = 1
+os_disk_storage_account_type   = "Standard_LRS"
+os_disk_caching                = "ReadWrite"
+vnet_name                      = "self-managed-k8s-vnet"
+vnet_address_space             = ["10.20.0.0/16"]
+subnet_name                    = "private-subnet"
+public_subnet_address_prefixes = ["10.20.0.0/24"]
