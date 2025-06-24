@@ -14,6 +14,7 @@ module "k8s-control-plane" {
   public_subnet_id             = var.public_subnet_id
   os_disk_caching              = var.os_disk_caching
   os_disk_storage_account_type = var.os_disk_storage_account_type
+  lb_master_address_pool_id           = module.vnet.lb_master_address_pool_id
 }
 
 module "k8s-worker-nodes" {
@@ -32,6 +33,7 @@ module "k8s-worker-nodes" {
   public_subnet_id             = var.public_subnet_id
   os_disk_caching              = var.os_disk_caching
   os_disk_storage_account_type = var.os_disk_storage_account_type
+    lb_worker_address_pool_id           = module.vnet.lb_worker_address_pool_id
 }
 
 module "vnet" {

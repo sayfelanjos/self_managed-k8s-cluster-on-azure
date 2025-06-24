@@ -1,4 +1,4 @@
-resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
+resource "azurerm_linux_virtual_machine_scale_set" "k8s_worder_nodes" {
   name                = var.worker_nodes_name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -23,13 +23,14 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
     write_accelerator_enabled = false
   }
   network_interface {
-    name    = "k8s-master-nodes-nic"
+    name    = "k8s-worker-nodes-nic"
     primary = true
 
     ip_configuration {
-      name      = "k8s-master-nodes-ipconfig"
+      name      = "k8s-worker-nodes-ipconfig"
       subnet_id = var.public_subnet_id
       primary   = true
+      load_balancer_backend_address_pool_ids = [var.lb_worker_address_pool_id]
     }
   }
 }

@@ -66,3 +66,7 @@ variable "public_subnet_id" {
   description = "The ID of the subnet where the virtual machine scale set will be deployed."
   type        = string
 }
+variable "lb_worker_address_pool_id" {
+  description = "The ID of the load balancer backend address pool."
+  type        = string
+}
