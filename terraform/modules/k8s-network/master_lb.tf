@@ -46,3 +46,15 @@ resource "azurerm_lb_rule" "k8s_master_rule" {
   probe_id                       = azurerm_lb_probe.k8s_master_probe.id
 }
 
+resource "azurerm_lb_nat_rule" "k8s_master_nat_rule" {
+  resource_group_name            = azurerm_lb.k8s_master_lb.resource_group_name
+  loadbalancer_id                = azurerm_lb.k8s_master_lb.id
+  name                           = "k8s-master-nat-rule"
+  protocol                       = "Tcp"
+  frontend_port_start            = 22
+  frontend_port_end              = 23
+  backend_port                   = 22
+  backend_address_pool_id = azurerm_lb_backend_address_pool.k8s_master_bkeapool.id
+  frontend_ip_configuration_name = "PublicIPAddress"
+}
+

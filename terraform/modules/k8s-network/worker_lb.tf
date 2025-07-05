@@ -44,5 +44,17 @@ resource "azurerm_lb_rule" "k8s_worker_rule" {
   frontend_ip_configuration_name = "PublicIPAddress"
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.k8s_worker_bkeapool.id]
   probe_id                       = azurerm_lb_probe.k8s_worker_probe.id
+  disable_outbound_snat = true
 }
 
+resource "azurerm_lb_nat_rule" "k8s_worker_nat_rule" {
+  resource_group_name            = azurerm_lb.k8s_worker_lb.resource_group_name
+  loadbalancer_id                = azurerm_lb.k8s_worker_lb.id
+  name                           = "k8s-worker-nat-rule"
+  protocol                       = "Tcp"
+  frontend_port_start            = 22
+  frontend_port_end              = 23
+  backend_port                   = 22
+  backend_address_pool_id = azurerm_lb_backend_address_pool.k8s_worker_bkeapool.id
+  frontend_ip_configuration_name = "PublicIPAddress"
+}

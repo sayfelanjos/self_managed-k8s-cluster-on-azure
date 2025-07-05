@@ -13,5 +13,5 @@ os_disk_storage_account_type   = "Standard_LRS"
 os_disk_caching                = "ReadWrite"
 vnet_name                      = "self-managed-k8s-vnet"
 vnet_address_space             = ["10.20.0.0/16"]
-subnet_name                    = "private-subnet"
+subnet_name                    = "public-subnet"
 public_subnet_address_prefixes = ["10.20.0.0/24"]
