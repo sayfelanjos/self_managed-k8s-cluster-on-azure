@@ -17,7 +17,7 @@ resource "azurerm_network_security_rule" "allow_ssh" {
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
   network_security_group_name = azurerm_network_security_group.public_subnet_nsg.name
-  resource_group_name         = azurerm_network_security_group.public_subnet_nsg.resource_group_name
+  resource_group_name         = var.resource_group_name
 }
 
 resource "azurerm_subnet_network_security_group_association" "public_subnet_nsg_association" {

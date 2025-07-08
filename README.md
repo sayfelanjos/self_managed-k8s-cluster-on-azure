@@ -40,7 +40,7 @@ The management process is straightforward:
 ```plaintext
 ├── .github/ # GitHub Actions or other repo metadata 
 ├── terraform/ 
-│ ├── cluster/ # Main Terraform configuration for the AKS cluster 
+│ ├── cluster/ # Main Terraform configuration for the Kubernetes cluster 
 │ ├── modules/ # Reusable Terraform modules 
 │ └── shared-state/ # Terraform backend configuration for Azure 
 ├── create-k8s-resources.sh # Script to create resources 
