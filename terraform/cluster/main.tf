@@ -1,12 +1,12 @@
-resource "azurerm_resource_group" "k8s_cluster" {
+resource "azurerm_resource_group" "k8s_cluster_rg" {
   name     = var.resource_group_name
   location = var.location
 }
 
 module "k8s-cluster" {
   source                         = "../modules/k8s-cluster"
-  resource_group_name            = azurerm_resource_group.k8s_cluster.name
-  location                       = azurerm_resource_group.k8s_cluster.location
+  resource_group_name            = azurerm_resource_group.k8s_cluster_rg.name
+  location                       = azurerm_resource_group.k8s_cluster_rg.location
   master_nodes_name              = var.master_nodes_name
   worker_nodes_name              = var.worker_nodes_name
   vmss_instance_count            = var.vmss_instance_count

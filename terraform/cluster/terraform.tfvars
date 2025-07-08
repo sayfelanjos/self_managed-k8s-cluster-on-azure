@@ -1,5 +1,5 @@
 resource_group_name            = "self-managed-k8s-cluster-rg"
-location                       = "eastus2"
+location                       = "eastus"
 admin_username                 = "azureadmin"
 source_image_sku               = "22_04-lts-gen2"
 source_image_publisher         = "Canonical"
