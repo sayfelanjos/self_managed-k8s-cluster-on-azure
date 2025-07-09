@@ -1,0 +1,26 @@
+---
+- name: Common configurations for all Kubernetes nodes
+  hosts: kubernetes
+  become: yes
+  tasks:
+    - name: Update apt cache and upgrade packages
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: dist
+      when: ansible_os_family == "Debian"
+
+    - name: Disable swap
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: '^(\S+\s+swap\s+.*)$'
+        line: '#\1'
+        state: present
+      ignore_errors: yes # In case swap is already commented out
+      when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
+
+    - name: Run swapoff -a
+      ansible.builtin.command: swapoff -a
+      changed_when: false # This command can run multiple times without issues
+      when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
+
+    # ... other common tasks like firewall, kernel modules, etc.
