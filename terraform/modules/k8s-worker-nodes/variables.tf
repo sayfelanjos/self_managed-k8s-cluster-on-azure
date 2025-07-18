@@ -62,7 +62,7 @@ variable "os_disk_caching" {
   description = "The caching type for the OS disk."
   type        = string
 }
-variable "public_subnet_id" {
+variable "private_subnet_id" {
   description = "The ID of the subnet where the virtual machine scale set will be deployed."
   type        = string
 }

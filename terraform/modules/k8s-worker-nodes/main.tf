@@ -1,4 +1,4 @@
-resource "azurerm_linux_virtual_machine_scale_set" "k8s_worder_nodes" {
+resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
   name                = var.worker_nodes_name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -28,7 +28,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worder_nodes" {
 
     ip_configuration {
       name      = "k8s-worker-nodes-ipconfig"
-      subnet_id = var.public_subnet_id
+      subnet_id = var.private_subnet_id
       primary   = true
       load_balancer_backend_address_pool_ids = [var.lb_worker_address_pool_id]
     }

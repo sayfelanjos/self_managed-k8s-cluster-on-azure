@@ -5,7 +5,7 @@ terraform {
       version = "4.33.0"
     }
   }
-    backend "azurerm" {
+  backend "azurerm" {
     resource_group_name  = "self-managed-k8s-cluster-tf-state-rg"
     storage_account_name = "selfmanagedk8sstate"
     container_name       = "self-managed-k8s-cluster-tf-state-container"

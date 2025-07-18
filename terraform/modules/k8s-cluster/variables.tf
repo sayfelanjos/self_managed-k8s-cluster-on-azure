@@ -14,7 +14,19 @@ variable "vnet_address_space" {
   type        = list(string)
   description = "Address space for the virtual network"
 }
-variable "subnet_name" {
+variable "private_subnet_name" {
+  description = "The name of the subnet."
+  type        = string
+}
+variable "private_subnet_address_prefixes" {
+  type        = list(string)
+  description = "Address prefixes for the subnet"
+}
+variable "private_subnet_id" {
+  description = "The ID of the subnet."
+  type        = string
+}
+variable "public_subnet_name" {
   description = "The name of the subnet."
   type        = string
 }

@@ -11,10 +11,10 @@ module "k8s-control-plane" {
   vmss_instance_count          = var.vmss_instance_count
   master_nodes_name            = var.master_nodes_name
   vmss_sku                     = var.vmss_sku
-  public_subnet_id             = var.public_subnet_id
+  private_subnet_id            = var.private_subnet_id
   os_disk_caching              = var.os_disk_caching
   os_disk_storage_account_type = var.os_disk_storage_account_type
-  lb_master_address_pool_id           = module.vnet.lb_master_address_pool_id
+  lb_master_address_pool_id    = module.vnet.lb_master_address_pool_id
 }
 
 module "k8s-worker-nodes" {
@@ -30,10 +30,10 @@ module "k8s-worker-nodes" {
   vmss_instance_count          = var.vmss_instance_count
   worker_nodes_name            = var.worker_nodes_name
   vmss_sku                     = var.vmss_sku
-  public_subnet_id             = var.public_subnet_id
+  private_subnet_id             = var.private_subnet_id
   os_disk_caching              = var.os_disk_caching
   os_disk_storage_account_type = var.os_disk_storage_account_type
-    lb_worker_address_pool_id           = module.vnet.lb_worker_address_pool_id
+  lb_worker_address_pool_id    = module.vnet.lb_worker_address_pool_id
 }
 
 module "vnet" {
@@ -42,7 +42,9 @@ module "vnet" {
   resource_group_name            = var.resource_group_name
   location                       = var.location
   vnet_address_space             = var.vnet_address_space
-  subnet_name                    = var.subnet_name
+  public_subnet_name                    = var.public_subnet_name
+  private_subnet_name                    = var.private_subnet_name
+  private_subnet_address_prefixes = var.private_subnet_address_prefixes
   public_subnet_address_prefixes = var.public_subnet_address_prefixes
   tags                           = var.tags
 }

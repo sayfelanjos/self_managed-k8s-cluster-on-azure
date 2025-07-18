@@ -1,38 +1,70 @@
 ---
-- name: Install Kubernetes components
-  hosts: kubernetes
-  become: yes
-  tasks:
-    - name: Add Kubernetes GPG key
-      ansible.builtin.apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        state: present
-      when: ansible_os_family == "Debian"
+- name: Install prerequisite packages for Kubernetes
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gpg
+    state: present
+    update_cache: yes
 
-    - name: Add Kubernetes APT repository
-      ansible.builtin.apt_repository:
-        repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
-        state: present
-        filename: kubernetes
-      when: ansible_os_family == "Debian"
+- name: Create directory for apt keyrings
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
 
-    - name: Install kubelet, kubeadm, kubectl
-      ansible.builtin.apt:
-        name:
-          - kubelet
-          - kubeadm
-          - kubectl
-        state: present
-        update_cache: yes
-      when: ansible_os_family == "Debian"
+- name: Download and dearmor Kubernetes GPG key
+  ansible.builtin.shell: |
+    curl -fsSL {{ kubernetes_repo_base_url }}{{ kubernetes_version }}/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  args:
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg # Only run if the key doesn't exist
 
-    - name: Hold Kubernetes packages from updates
-      ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
-      changed_when: false
-      when: ansible_os_family == "Debian"
+# # Using ansible.builtin.shell to convert the GPG key to keyring format
+# # The shell module is necessary here because gpg does not have a direct Ansible module.
+# - name: Convert the GPG key to keyring format
+#   ansible.builtin.shell:
+#     cmd: gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/Release.key
+#     creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-    - name: Enable and start kubelet service
-      ansible.builtin.systemd:
-        name: kubelet
-        enabled: yes
-        state: started
+- name: Add Kubernetes APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] {{ kubernetes_repo_base_url }}{{ kubernetes_version }}/deb/ /"
+    state: present
+    filename: kubernetes
+    update_cache: yes # Update apt cache after adding the repo
+
+- name: Verify repository and key setup (optional, for debugging)
+  ansible.builtin.shell: |
+    apt-key list | grep -i kubernetes || echo "No old apt-key entries found for Kubernetes (good!)"
+    ls -l /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    grep -r kubernetes /etc/apt/sources.list*
+  register: verify_output
+  changed_when: false # This task doesn't change state
+  # This task won't show old apt-key entries if they were never there,
+  # but it's good for ensuring the new keyring method is visible.
+  # `apt-key list` is deprecated for checking new style keyrings, but helpful for historical checks.
+
+- name: Display verification output
+  ansible.builtin.debug:
+    var: verify_output.stdout_lines
+
+- name: Install kubelet, kubeadm, kubectl
+  ansible.builtin.apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Hold Kubernetes packages from updates
+  ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
+  changed_when: false
+  when: ansible_os_family == "Debian"
+
+- name: Enable and start kubelet service
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: yes
+    state: started

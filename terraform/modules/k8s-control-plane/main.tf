@@ -28,7 +28,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
 
     ip_configuration {
       name      = "k8s-master-nodes-ipconfig"
-      subnet_id = var.public_subnet_id
+      subnet_id = var.private_subnet_id
       primary   = true
       load_balancer_backend_address_pool_ids = [var.lb_master_address_pool_id]
 

@@ -1,0 +1,18 @@
+---
+- name: Update apt cache (for Debian/Ubuntu)
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Install Python 3 on Debian/Ubuntu
+  ansible.builtin.apt:
+    name: "{{ python_package_debian }}"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install Python 3 on RedHat/CentOS/Fedora
+  ansible.builtin.dnf:
+    name: "{{ python_package_redhat }}"
+    state: present
+  when: ansible_os_family == "RedHat"

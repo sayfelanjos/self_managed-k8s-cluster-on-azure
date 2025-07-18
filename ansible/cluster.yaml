@@ -1,0 +1,27 @@
+---
+- name: deploy k8s cluster
+  hosts: k8s
+  become: yes
+  vars:
+    # Define package names as variables for easy customization
+    python_package_debian: python3
+    python_package_redhat: python3
+    kubernetes_version: "v1.30" # IMPORTANT: Adjust this to your desired Kubernetes version (e.g., "1.30", "1.31", "1.32")
+    # Base URL for Kubernetes package repository.
+    # The 'stable' segment is followed by the version.
+    kubernetes_repo_base_url: "https://pkgs.k8s.io/core:/stable:/"
+  tasks:
+#    - name: Ensure Python 3 is installed
+#      ansible.builtin.include_tasks: tasks/install_python.yaml
+    - name: Ensure prerequisites are installed
+      ansible.builtin.include_tasks: tasks/common.yaml
+    - name: Install containerd
+      ansible.builtin.include_tasks: tasks/containerd.yaml
+    - name: Install Kubernetes components
+      ansible.builtin.import_tasks: tasks/kube_install.yaml
+    - name: Initialize Kubernetes Master
+      ansible.builtin.import_tasks: tasks/master_init.yaml
+      when: inventory_hostname in groups['masters']
+    - name: Join Kubernetes Workers to Cluster
+      ansible.builtin.import_tasks: tasks/worker_join.yaml
+      when: inventory_hostname in groups['workers']

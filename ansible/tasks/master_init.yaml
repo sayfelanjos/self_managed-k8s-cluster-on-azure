@@ -1,51 +1,47 @@
 ---
-- name: Initialize Kubernetes Master
-  hosts: masters
-  become: yes
-  tasks:
-    - name: Initialize the Kubernetes cluster
-      ansible.builtin.command: >
-        kubeadm init
-        --pod-network-cidr=10.244.0.0/16 # Example for Flannel, adjust for your CNI
-        --apiserver-advertise-address={{ ansible_host }}
-      register: kubeadm_init_output
-      when: "'k8s_master_initialized' not in ansible_facts" # Prevent re-initialization
+- name: Initialize the Kubernetes cluster
+  ansible.builtin.command: >
+    kubeadm init
+    --pod-network-cidr=10.244.0.0/16 # Example for Flannel, adjust for your CNI
+    --apiserver-advertise-address={{ ansible_host }}
+  register: kubeadm_init_output
+  when: "'k8s_master_initialized' not in ansible_facts" # Prevent re-initialization
 
-    - name: Create .kube directory for kubeconfig
-      ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.kube"
-        state: directory
-        mode: '0755'
-      delegate_to: localhost # Run this on the Ansible control node
+- name: Create .kube directory for kubeconfig
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.kube"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost # Run this on the Ansible control node
 
-    - name: Copy admin.conf to Ansible control node
-      ansible.builtin.fetch:
-        src: /etc/kubernetes/admin.conf
-        dest: "{{ ansible_env.HOME }}/.kube/config"
-        flat: yes
-      delegate_to: localhost # Run this on the Ansible control node
+- name: Copy admin.conf to Ansible control node
+  ansible.builtin.fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ ansible_env.HOME }}/.kube/config"
+    flat: yes
+  delegate_to: localhost # Run this on the Ansible control node
 
-    - name: Set correct permissions on kubeconfig
-      ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.kube/config"
-        mode: '0600'
-      delegate_to: localhost # Run this on the Ansible control node
+- name: Set correct permissions on kubeconfig
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.kube/config"
+    mode: '0600'
+  delegate_to: localhost # Run this on the Ansible control node
 
-    - name: Install Pod Network Add-on (e.g., Flannel)
-      ansible.builtin.command: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-      delegate_to: localhost # Run this on the Ansible control node using the copied kubeconfig
-      # Add a pause or wait for pods to be ready if needed
+- name: Install Pod Network Add-on (e.g., Flannel)
+  ansible.builtin.command: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+  delegate_to: localhost # Run this on the Ansible control node using the copied kubeconfig
+  # Add a pause or wait for pods to be ready if needed
 
-    - name: Get kubeadm join command for workers
-      ansible.builtin.command: kubeadm token create --print-join-command
-      register: kubeadm_join_command
-      delegate_to: localhost # Run this on the Ansible control node using the copied kubeconfig
-      changed_when: false
+- name: Get kubeadm join command for workers
+  ansible.builtin.command: kubeadm token create --print-join-command
+  register: kubeadm_join_command
+  delegate_to: localhost # Run this on the Ansible control node using the copied kubeconfig
+  changed_when: false
 
-    - name: Set fact with join command
-      ansible.builtin.set_fact:
-        k8s_join_command: "{{ kubeadm_join_command.stdout }}"
+- name: Set fact with join command
+  ansible.builtin.set_fact:
+    k8s_join_command: "{{ kubeadm_join_command.stdout }}"
 
-    - name: Mark master as initialized (to prevent re-initialization)
-      ansible.builtin.set_fact:
-        k8s_master_initialized: true
+- name: Mark master as initialized (to prevent re-initialization)
+  ansible.builtin.set_fact:
+    k8s_master_initialized: true
