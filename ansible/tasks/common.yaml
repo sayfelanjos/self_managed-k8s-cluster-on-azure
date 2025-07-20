@@ -2,8 +2,6 @@
 - name: Update apt cache and upgrade packages
   ansible.builtin.apt:
     update_cache: yes
-  # This task is specific to Debian-based systems as it uses apt for package management.
-  when: ansible_os_family == "Debian"
 
 - name: Disable swap
   block:
@@ -18,6 +16,3 @@
     - name: Run swapoff -a
       ansible.builtin.command: swapoff -a
       changed_when: false # This command can run multiple times without issues
-  when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
-
-# ... other common tasks like firewall, kernel modules, etc.

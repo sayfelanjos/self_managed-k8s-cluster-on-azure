@@ -38,6 +38,19 @@
   delegate_to: localhost # Run this on the Ansible control node using the copied kubeconfig
   changed_when: false
 
+
+- name: Set a secret in Key Vault
+  azure.azcollection.azure_rm_keyvault_secret:
+    # Replace with the name of your Key Vault (from Terraform output)
+    keyvault_uri: "https://kv-example-xxxxxxxx.vault.azure.net"
+    secret_name: "ansible-secret"
+    secret_value: "this-is-from-ansible"
+  register: output
+
+- name: Display the result
+  debug:
+    var: output
+
 - name: Set fact with join command
   ansible.builtin.set_fact:
     k8s_join_command: "{{ kubeadm_join_command.stdout }}"

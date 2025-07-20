@@ -78,6 +78,7 @@ variable "private_subnet_address_prefixes" {
   type        = list(string)
   description = "Address prefixes for the subnet"
 }
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to the resources"

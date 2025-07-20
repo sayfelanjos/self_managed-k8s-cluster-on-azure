@@ -11,6 +11,10 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
     public_key = var.admin_ssh_key
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   source_image_reference {
     offer     = var.source_image_offer
     publisher = var.source_image_publisher
