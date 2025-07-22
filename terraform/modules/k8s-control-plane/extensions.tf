@@ -15,9 +15,9 @@ resource "azurerm_virtual_machine_scale_set_extension" "setup_k8s_master_nodes" 
   type_handler_version         = "2.0"
   auto_upgrade_minor_version   = true
 
-  protected_settings = <<PROTECTED_SETTINGS
-    {
-      "script": "${base64encode(file("${path.module}/run_ansible.sh"))}"
-    }
-PROTECTED_SETTINGS
+  protected_settings = jsonencode({
+    script = base64encode(templatefile("${path.module}/run_ansible.sh.tpl", {
+        control_plane_endpoint = var.master_public_ip,
+    }))
+  })
 }

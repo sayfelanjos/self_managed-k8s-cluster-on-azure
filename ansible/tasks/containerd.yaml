@@ -37,7 +37,7 @@
                 runtime_type = "io.containerd.runc.v2"
                 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
                   SystemdCgroup = true
-  notify: Restart containerd
+  register: containerd_config
 
 - name: Enable and start containerd service
   ansible.builtin.systemd:
@@ -49,3 +49,4 @@
   ansible.builtin.systemd:
     name: containerd
     state: restarted
+  when: containerd_config.changed

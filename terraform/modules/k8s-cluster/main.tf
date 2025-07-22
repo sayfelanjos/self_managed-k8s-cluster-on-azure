@@ -15,6 +15,7 @@ module "k8s-control-plane" {
   os_disk_caching              = var.os_disk_caching
   os_disk_storage_account_type = var.os_disk_storage_account_type
   lb_master_address_pool_id    = module.vnet.lb_master_address_pool_id
+  master_public_ip             = module.vnet.master_public_ip
 }
 
 module "k8s-worker-nodes" {

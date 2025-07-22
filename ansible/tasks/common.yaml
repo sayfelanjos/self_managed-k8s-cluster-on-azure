@@ -16,3 +16,10 @@
     - name: Run swapoff -a
       ansible.builtin.command: swapoff -a
       changed_when: false # This command can run multiple times without issues
+
+- name: Enable IP forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes

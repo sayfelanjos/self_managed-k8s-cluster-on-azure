@@ -3,6 +3,8 @@
   ansible.builtin.apt:
     name:
       - apt-transport-https
+      - ca-certificates
+      - curl
       - gpg
     state: present
     update_cache: yes
@@ -56,12 +58,10 @@
       - kubectl
     state: present
     update_cache: yes
-  when: ansible_os_family == "Debian"
 
 - name: Hold Kubernetes packages from updates
   ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
   changed_when: false
-  when: ansible_os_family == "Debian"
 
 - name: Enable and start kubelet service
   ansible.builtin.systemd:

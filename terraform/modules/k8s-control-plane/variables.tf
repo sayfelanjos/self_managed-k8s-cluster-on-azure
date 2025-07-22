@@ -69,3 +69,8 @@ variable "lb_master_address_pool_id" {
     description = "The ID of the load balancer backend address pool."
     type        = string
 }
+
+variable "master_public_ip" {
+  description = "The public IP address for the master nodes load balancer."
+  type        = string
+}
