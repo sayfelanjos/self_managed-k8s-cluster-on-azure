@@ -46,9 +46,9 @@
   # but it's good for ensuring the new keyring method is visible.
   # `apt-key list` is deprecated for checking new style keyrings, but helpful for historical checks.
 
-- name: Display verification output
-  ansible.builtin.debug:
-    var: verify_output.stdout_lines
+#- name: Display verification output
+#  ansible.builtin.debug:
+#    var: verify_output.stdout_lines
 
 - name: Install kubelet, kubeadm, kubectl
   ansible.builtin.apt:
