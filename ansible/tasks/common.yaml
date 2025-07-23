@@ -17,9 +17,26 @@
       ansible.builtin.command: swapoff -a
       changed_when: false # This command can run multiple times without issues
 
-- name: Enable IP forwarding
-  ansible.posix.sysctl:
-    name: net.ipv4.ip_forward
-    value: '1'
+# Configure kernel modules and sysctl for Kubernetes
+- name: Load the br_netfilter kernel module
+  community.general.modprobe:
+    name: br_netfilter
     state: present
+
+- name: Ensure br_netfilter is loaded on boot
+  lineinfile:
+    path: /etc/modules-load.d/k8s.conf
+    line: br_netfilter
+    create: yes
+    mode: '0644'
+
+- name: Ensure sysctl params are set for Kubernetes networking
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/k8s.conf
     reload: yes
+  with_items:
+    - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
+    - { name: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
+    - { name: 'net.ipv4.ip_forward', value: '1' }

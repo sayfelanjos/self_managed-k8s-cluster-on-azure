@@ -6,10 +6,11 @@
       --control-plane-endpoint="{{ control_plane_endpoint }}:6443" \
       --apiserver-advertise-address="{{ ansible_default_ipv4.address }}" \
       --upload-certs
+  args:
+    # This is the key for idempotency:
+    # The command will NOT run if this file already exists.
+    creates: /etc/kubernetes/admin.conf
 
-  # Example for Flannel, adjust for your CNI
-#  register: kubeadm_init_output
-#  when: "'k8s_master_initialized' not in ansible_facts" # Prevent re-initialization
 
   # Add a pause or wait for pods to be ready if needed
 #

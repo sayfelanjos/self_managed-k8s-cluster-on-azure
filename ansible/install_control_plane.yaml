@@ -24,7 +24,6 @@
       ansible.builtin.include_tasks: tasks/setup_master_access.yaml
 
 - name: Install Pod Network Add-on (e.g., Flannel)
-  become: yes
   hosts: masters
   tasks:
     - name: Install Pod Network Add-on

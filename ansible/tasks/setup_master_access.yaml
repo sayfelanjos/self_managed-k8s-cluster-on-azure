@@ -6,6 +6,7 @@
     mode: '0755'
 
 - name: Copy admin.conf to .kube/config
+  become: yes
   ansible.builtin.fetch:
     src: /etc/kubernetes/admin.conf
     dest: "{{ ansible_env.HOME }}/.kube/config"
