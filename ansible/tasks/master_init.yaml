@@ -11,25 +11,6 @@
 #  register: kubeadm_init_output
 #  when: "'k8s_master_initialized' not in ansible_facts" # Prevent re-initialization
 
-- name: Create .kube directory for kubeconfig
-  ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.kube"
-    state: directory
-    mode: '0755'
-
-- name: Copy admin.conf to .kube/config
-  ansible.builtin.fetch:
-    src: /etc/kubernetes/admin.conf
-    dest: "{{ ansible_env.HOME }}/.kube/config"
-    flat: yes
-
-- name: Set correct permissions on kubeconfig
-  ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.kube/config"
-    mode: '0600'
-
-- name: Install Pod Network Add-on (e.g., Flannel)
-  ansible.builtin.command: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
   # Add a pause or wait for pods to be ready if needed
 #
 #- name: Get kubeadm join command for workers
