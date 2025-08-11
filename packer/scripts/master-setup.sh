@@ -6,7 +6,7 @@ set -e
 
 # Update packages and install Ansible
 sudo apt update
-sudo apt install -y ansible="$ANSIBLE_VERSION"
+sudo apt install -y ansible
 
 
 # Install Azure CLI
@@ -25,6 +25,6 @@ git sparse-checkout set ansible
 # The --connection=local flag tells Ansible to run on the machine itself.
 ansible-playbook -i ansible/inventories/hosts/hosts.ini \
   --connection=local  \
-  ansible/install_master.yaml \
-  --extra-vars control_plane_endpoint="$CONTROL_PLANE_ENDPOINT" \
-  --extra-vars pod_network_cidr="$POD_NETWORK_CIDR"
+  ansible/install_master.yaml
+#  --extra-vars control_plane_endpoint="$CONTROL_PLANE_ENDPOINT" \
+#  --extra-vars pod_network_cidr="$POD_NETWORK_CIDR"
