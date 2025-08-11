@@ -28,7 +28,11 @@ resource "azurerm_virtual_machine_scale_set_extension" "setup_k8s_master_nodes" 
     # force_run = sha256(file("${path.module}/hello.sh"))
     # timeout   = "PT5M"
     # script = base64encode(file("${path.module}/hello.sh"))
-    commandToExecute = "sh hello.sh"
+    commandToExecute = base64encode(<<-COMMAND
+      #!/bin/bash
+      kubeadm init --pod-network-cidr=10.240.0.0/16 --control-plane-endpoint=20.168.219.178:6443 --apiserver-advertise-address=10.20.1.4 --upload-certs
+    COMMAND
+    )
   })
 
   # settings = jsonencode({

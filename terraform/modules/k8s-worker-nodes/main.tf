@@ -1,3 +1,8 @@
+data "azurerm_image" "k8s_node_image" {
+  name = "k8s-master-image-1.28.2"
+  resource_group_name = var.resource_group_name
+}
+
 resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
   name                = var.worker_nodes_name
   resource_group_name = var.resource_group_name
@@ -5,8 +10,8 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
   sku                 = var.vmss_sku
   instances           = var.vmss_instance_count
   admin_username      = var.admin_username
-  vtpm_enabled        = true
-  secure_boot_enabled = true
+  vtpm_enabled        = false
+  secure_boot_enabled = false
   overprovision = false
   extension_operations_enabled = true
   single_placement_group = false
@@ -24,12 +29,14 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
     type = "SystemAssigned"
   }
 
-  source_image_reference {
-    offer     = var.source_image_offer
-    publisher = var.source_image_publisher
-    sku       = var.source_image_sku
-    version   = var.source_image_version
-  }
+  # source_image_reference {
+  #   offer     = var.source_image_offer
+  #   publisher = var.source_image_publisher
+  #   sku       = var.source_image_sku
+  #   version   = var.source_image_version
+  # }
+
+  source_image_id = data.azurerm_image.k8s_node_image.id
 
   os_disk {
     caching                   = var.os_disk_caching
@@ -49,5 +56,5 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
     }
   }
 
-  custom_data = base64encode(file("${path.module}/hello.sh"))
+  # custom_data = base64encode(file("${path.module}/hello.sh"))
 }
