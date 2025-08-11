@@ -1,15 +1,15 @@
-resource_group_name             = "self-managed-k8s-cluster-rg"
-admin_username                  = "azureadmin"
-source_image_sku                = "cvm"
-source_image_publisher          = "Canonical"
-source_image_offer              = "ubuntu-24_04-lts"
-source_image_version            = "latest"
+resource_group_name    = "self-managed-k8s-cluster-rg"
+admin_username         = "azureadmin"
+source_image_sku       = "cvm"
+source_image_publisher = "Canonical"
+source_image_offer     = "ubuntu-24_04-lts"
+source_image_version   = "latest"
 
 # The worker and master node names can't have numbers in their names, as Azure will append
 # a sequential number in the final of the name automatically, and this number will be used by the
 # scripts that will run into the VMs.
-worker_nodes_name               = "workernode"
-master_nodes_name               = "masternode"
+worker_nodes_name = "workernode"
+master_nodes_name = "masternode"
 
 vmss_sku                        = "Standard_D4s_v4"
 vmss_instance_count             = 1
