@@ -13,7 +13,7 @@ terraform {
     resource_group_name  = "self-managed-k8s-cluster-tf-state-rg"
     storage_account_name = "selfmanagedk8sstate"
     container_name       = "self-managed-k8s-cluster-tf-state-container"
-    key                  = "terraform-state/terraform.tfstate"
+    key                  = "terraform-state/bootstrap.tfstate"
   }
 }
 

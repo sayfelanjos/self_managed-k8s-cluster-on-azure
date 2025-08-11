@@ -5,6 +5,14 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
   sku                 = var.vmss_sku
   instances           = var.vmss_instance_count
   admin_username      = var.admin_username
+  extension_operations_enabled = true
+  vtpm_enabled = true
+  secure_boot_enabled = true
+  overprovision = false
+
+  boot_diagnostics {
+    storage_account_uri = null
+  }
 
   admin_ssh_key {
     username   = var.admin_username
@@ -29,13 +37,13 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
   network_interface {
     name    = "k8s-master-nodes-nic"
     primary = true
+    # network_security_group_id = var.master_nodes_nsg_id
 
     ip_configuration {
       name      = "k8s-master-nodes-ipconfig"
       subnet_id = var.private_subnet_id
       primary   = true
       load_balancer_backend_address_pool_ids = [var.lb_master_address_pool_id]
-
     }
   }
 }

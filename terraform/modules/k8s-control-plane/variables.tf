@@ -74,3 +74,13 @@ variable "master_public_ip" {
   description = "The public IP address for the master nodes load balancer."
   type        = string
 }
+
+# variable "kv_uri" {
+#     description = "The URI of the Azure Key Vault."
+#     type        = string
+# }
+
+variable "master_nodes_nsg_id" {
+  type = string
+  description = "The ID of the network security group for the master nodes."
+}

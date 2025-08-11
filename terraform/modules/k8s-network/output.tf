@@ -21,3 +21,7 @@ output "master_public_ip" {
 output "worker_public_ip" {
   value = azurerm_public_ip.k8s_worker_lb_pip.ip_address
 }
+
+output "master_nodes_nsg_id" {
+  value = azurerm_network_security_group.private_subnet_nsg.id
+}

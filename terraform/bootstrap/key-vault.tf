@@ -31,32 +31,26 @@ resource "azurerm_key_vault" "kv" {
     secret_permissions = ["Get", "List", "Set", "Delete", "Purge", "Recover"]
     certificate_permissions = ["Get"]
   }
+}
 
-  # Add this new access policy for the Master Node
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
+resource "azurerm_key_vault_access_policy" "master_policy" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_user_assigned_identity.master_identity.client_id
 
-    # Reference the output from the k8s-cluster module
-    object_id = module.k8s-cluster.control_plane_principal_id
+  # Specify permissions for secrets
+  secret_permissions = [
+    "Set",
+  ]
+}
 
-    # Permissions needed by the master node to store the join token
-    secret_permissions = [
-      "Set"
-    ]
-  }
+resource "azurerm_key_vault_access_policy" "worker_policy" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_user_assigned_identity.worker_identity.client_id
 
-    # Add this new access policy for the Worker Node
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-
-    # Reference the output from the k8s-cluster module
-    object_id = module.k8s-cluster.worker_node_principal_id
-
-    # Permissions needed by the master node to store the join token
-    secret_permissions = [
-      "Get"
-    ]
-  }
-
-  tags = var.tags
+  # Specify permissions for secrets
+  secret_permissions = [
+    "Get",
+  ]
 }

@@ -1,9 +1,8 @@
 resource_group_name             = "self-managed-k8s-cluster-rg"
-location                        = "eastus2"
 admin_username                  = "azureadmin"
-source_image_sku                = "22_04-lts-gen2"
+source_image_sku                = "cvm"
 source_image_publisher          = "Canonical"
-source_image_offer              = "0001-com-ubuntu-server-jammy"
+source_image_offer              = "ubuntu-24_04-lts"
 source_image_version            = "latest"
 
 # The worker and master node names can't have numbers in their names, as Azure will append
@@ -12,7 +11,7 @@ source_image_version            = "latest"
 worker_nodes_name               = "workernode"
 master_nodes_name               = "masternode"
 
-vmss_sku                        = "Standard_B2s"
+vmss_sku                        = "Standard_D4s_v4"
 vmss_instance_count             = 1
 os_disk_storage_account_type    = "Standard_LRS"
 os_disk_caching                 = "ReadWrite"

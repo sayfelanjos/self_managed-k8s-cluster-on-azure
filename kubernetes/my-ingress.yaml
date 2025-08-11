@@ -1,0 +1,25 @@
+# my-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  annotations:
+    # This annotation is often needed. It ensures the path is passed correctly.
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  # This is important! It tells Kubernetes to use the NGINX controller
+  # you installed earlier. The class name is "nginx" by default.
+  ingressClassName: nginx
+  rules:
+  - host: "myapp.example.com" # The domain name you want to use
+    http:
+      paths:
+      - path: / # Route all traffic for this host
+        pathType: Prefix
+        backend:
+          service:
+            # This must match the name of the Service we created in Step 1
+            name: my-app-service
+            port:
+              # This must match the port number on that Service
+              number: 80

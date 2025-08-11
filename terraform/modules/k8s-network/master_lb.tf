@@ -26,6 +26,14 @@ resource "azurerm_lb_backend_address_pool" "k8s_master_bkeapool" {
   loadbalancer_id = azurerm_lb.k8s_master_lb.id
 }
 
+# resource "azurerm_lb_backend_address_pool_address" "k8s_master_node_1_ip" {
+#   name                    = "k8s-master-node-1-ip"
+#   backend_address_pool_id = azurerm_lb_backend_address_pool.k8s_master_bkeapool.id
+#   virtual_network_id      = azurerm_virtual_network.vnet.id
+#   ip_address              = "10.20.1.6" # Static IP of the first master node
+# }
+
+
 # Create a Health Probe for the K8s API Server
 resource "azurerm_lb_probe" "k8s_master_probe" {
   loadbalancer_id = azurerm_lb.k8s_master_lb.id
@@ -53,8 +61,8 @@ resource "azurerm_lb_nat_rule" "k8s_master_nat_rule" {
   loadbalancer_id                = azurerm_lb.k8s_master_lb.id
   name                           = "k8s-master-nat-rule"
   protocol                       = "Tcp"
-  frontend_port_start            = 22
-  frontend_port_end              = 23
+  frontend_port_start            = 50000
+  frontend_port_end              = 50050
   backend_port                   = 22
   backend_address_pool_id = azurerm_lb_backend_address_pool.k8s_master_bkeapool.id
   frontend_ip_configuration_name = azurerm_public_ip.k8s_master_lb_pip.name

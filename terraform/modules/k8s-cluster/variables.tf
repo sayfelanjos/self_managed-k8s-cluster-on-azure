@@ -95,3 +95,8 @@ variable "tags" {
   }
 }
 
+# variable "kv_uri" {
+#     description = "The URI of the Key Vault to use for secrets management."
+#     type        = string
+# }
+

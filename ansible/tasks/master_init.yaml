@@ -2,7 +2,7 @@
 - name: Initialize the Kubernetes cluster
   ansible.builtin.command: |
     kubeadm init \
-      --pod-network-cidr=10.244.0.0/16 \
+      --pod-network-cidr={{ pod_network_cidr }} \
       --control-plane-endpoint="{{ control_plane_endpoint }}:6443" \
       --apiserver-advertise-address="{{ ansible_default_ipv4.address }}" \
       --upload-certs
@@ -13,20 +13,23 @@
 
 
   # Add a pause or wait for pods to be ready if needed
-#
+
 #- name: Get kubeadm join command for workers
 #  ansible.builtin.command: kubeadm token create --print-join-command
 #  register: kubeadm_join_command
-#  delegate_to: localhost # Run this on the Ansible control node using the copied kubeconfig
 #  changed_when: false
-
-
+#
+#- name: Get kubeadm join command for masters
+#  ansible.builtin.command: kubeadm init phase upload-certs --upload-certs
+#  register: certs_key
+#  changed_when: false
+#
 #- name: Set a secret in Key Vault
 #  azure.azcollection.azure_rm_keyvault_secret:
 #    # Replace with the name of your Key Vault (from Terraform output)
-#    keyvault_uri: "https://kv-example-xxxxxxxx.vault.azure.net"
-#    secret_name: "ansible-secret"
-#    secret_value: "this-is-from-ansible"
+#    keyvault_uri: {{ kv_uri }}
+#    secret_name: "k8s_worker_join_command"
+#    secret_value: "{{ kubeadm_join_command.stdout }}"
 #  register: output
 #
 #- name: Display the result

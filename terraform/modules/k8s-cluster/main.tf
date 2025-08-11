@@ -16,6 +16,8 @@ module "k8s-control-plane" {
   os_disk_storage_account_type = var.os_disk_storage_account_type
   lb_master_address_pool_id    = module.vnet.lb_master_address_pool_id
   master_public_ip             = module.vnet.master_public_ip
+  # kv_uri                       = var.kv_uri
+  master_nodes_nsg_id         = module.vnet.master_nodes_nsg_id
 }
 
 module "k8s-worker-nodes" {
@@ -31,7 +33,7 @@ module "k8s-worker-nodes" {
   vmss_instance_count          = var.vmss_instance_count
   worker_nodes_name            = var.worker_nodes_name
   vmss_sku                     = var.vmss_sku
-  private_subnet_id             = var.private_subnet_id
+  public_subnet_id             = var.public_subnet_id
   os_disk_caching              = var.os_disk_caching
   os_disk_storage_account_type = var.os_disk_storage_account_type
   lb_worker_address_pool_id    = module.vnet.lb_worker_address_pool_id
@@ -48,4 +50,5 @@ module "vnet" {
   private_subnet_address_prefixes = var.private_subnet_address_prefixes
   public_subnet_address_prefixes = var.public_subnet_address_prefixes
   tags                           = var.tags
+  master_nodes_name = var.master_nodes_name
 }

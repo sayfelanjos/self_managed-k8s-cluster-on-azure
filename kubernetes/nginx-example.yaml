@@ -1,0 +1,32 @@
+# my-app.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-hello-app
+spec:
+  replicas: 2 # Create two pods for our app
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+      - name: hello-web
+        image: nginxdemos/hello # A simple web server that says "Hello"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service # The name our Ingress will use to find the pods
+spec:
+  selector:
+    app: hello # Selects the pods created by the Deployment above
+  ports:
+    - protocol: TCP
+      port: 80 # The port the service is available on
+      targetPort: 80 # The port on the pods to send traffic to

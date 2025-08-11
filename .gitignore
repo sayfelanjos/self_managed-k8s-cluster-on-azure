@@ -39,4 +39,6 @@ terraform.rc
 
 .secrets
 
+# Ignore Packer variables file
 *.pkrvars.hcl
+

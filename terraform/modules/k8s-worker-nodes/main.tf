@@ -5,6 +5,15 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
   sku                 = var.vmss_sku
   instances           = var.vmss_instance_count
   admin_username      = var.admin_username
+  vtpm_enabled        = true
+  secure_boot_enabled = true
+  overprovision = false
+  extension_operations_enabled = true
+  single_placement_group = false
+
+  boot_diagnostics {
+    storage_account_uri = null
+  }
 
   admin_ssh_key {
     username   = var.admin_username
@@ -21,20 +30,24 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
     sku       = var.source_image_sku
     version   = var.source_image_version
   }
+
   os_disk {
     caching                   = var.os_disk_caching
     storage_account_type      = var.os_disk_storage_account_type
     write_accelerator_enabled = false
   }
+
   network_interface {
     name    = "k8s-worker-nodes-nic"
     primary = true
 
     ip_configuration {
       name      = "k8s-worker-nodes-ipconfig"
-      subnet_id = var.private_subnet_id
+      subnet_id = var.public_subnet_id
       primary   = true
       load_balancer_backend_address_pool_ids = [var.lb_worker_address_pool_id]
     }
   }
+
+  custom_data = base64encode(file("${path.module}/hello.sh"))
 }

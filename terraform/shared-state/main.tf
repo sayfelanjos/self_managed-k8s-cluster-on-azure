@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "self_managed_k8s_cluster_tf-state_rg" {
   name     = "self-managed-k8s-cluster-tf-state-rg"
-  location = "EastUS"
+  location = var.location
 }
 
 resource "azurerm_storage_account" "self_managed_k8s_cluster_tf_state_sa" {
@@ -18,6 +18,6 @@ resource "azurerm_storage_container" "clusters_tf_state_container" {
   container_access_type = "blob"
   depends_on            = [azurerm_storage_account.self_managed_k8s_cluster_tf_state_sa]
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
