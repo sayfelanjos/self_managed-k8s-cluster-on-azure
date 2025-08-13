@@ -31,9 +31,9 @@ resource "azurerm_eventhub_namespace" "example" {
 }
 
 resource "azurerm_eventhub" "example" {
-  name                = "exevent2"
-  partition_count     = 2
-  message_retention   = 1
+  name              = "exevent2"
+  partition_count   = 2
+  message_retention = 1
 }
 
 resource "azurerm_storage_account" "example" {

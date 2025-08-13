@@ -14,21 +14,21 @@ resource "random_string" "kv_suffix" {
 
 # Create the Azure Key Vault.
 resource "azurerm_key_vault" "kv" {
-  name                        = "k8s-cluster-kv-${random_string.kv_suffix.result}"
-  resource_group_name         = var.resource_group_name
-  location                    = var.location
-  tenant_id                   = data.azurerm_client_config.current.tenant_id
-  sku_name                    = "standard"
-  soft_delete_retention_days  = 7
-  purge_protection_enabled    = false
+  name                       = "k8s-cluster-kv-${random_string.kv_suffix.result}"
+  resource_group_name        = var.resource_group_name
+  location                   = var.location
+  tenant_id                  = data.azurerm_client_config.current.tenant_id
+  sku_name                   = "standard"
+  soft_delete_retention_days = 7
+  purge_protection_enabled   = false
 
   # Access policy for the user deploying the Terraform configuration.
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = data.azurerm_client_config.current.object_id
 
-    key_permissions    = ["Get"]
-    secret_permissions = ["Get", "List", "Set", "Delete", "Purge", "Recover"]
+    key_permissions         = ["Get"]
+    secret_permissions      = ["Get", "List", "Set", "Delete", "Purge", "Recover"]
     certificate_permissions = ["Get"]
   }
 }

@@ -12,7 +12,7 @@
     creates: /etc/kubernetes/admin.conf
 
 
-  # Add a pause or wait for pods to be ready if needed
+# Add a pause or wait for pods to be ready if needed
 
 #- name: Get kubeadm join command for workers
 #  ansible.builtin.command: kubeadm token create --print-join-command

@@ -2,8 +2,8 @@ source "azure-arm" "master" {
   # Use a managed identity for authentication to Azure
   use_azure_cli_auth = true
 
-  # # Assign the User-Assigned Managed Identity to the temporary Packer VM
-  # identity_id = var.master_identity_id
+  # Assign the User-Assigned Managed Identity to the temporary Packer VM
+  # client_id = var.master_identity_id
 
 
   os_type                           = "Linux"
@@ -22,9 +22,9 @@ build {
   provisioner "shell" {
     script = "scripts/master-setup.sh"
     environment_vars = [
-      # "$ANSIBLE_VERSION=${var.ansible_version}",
-      # "CONTROL_PLANE_ENDPOINT=${var.control_plane_endpoint}",
-      # "POD_NETWORK_CIDR=${var.pod_network_cidr}",
+      "ANSIBLE_VERSION=${var.ansible_version}",
+      "CONTROL_PLANE_ENDPOINT=${var.control_plane_endpoint}",
+      "POD_NETWORK_CIDR=${var.pod_network_cidr}",
       # "KV_URI=${var.kv_uri}",
       # "RESOURCE_GROUP_NAME=${var.resource_group_name}",
       # "LOCATION=${var.location}",

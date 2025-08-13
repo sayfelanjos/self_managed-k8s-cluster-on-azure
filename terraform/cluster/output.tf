@@ -1,5 +1,5 @@
 output "master_public_ip" {
-  value = module.k8s-cluster.master_public_ip
+  value = module.k8s-cluster.control_plane_endpoint
 }
 
 output "worker_public_ip" {

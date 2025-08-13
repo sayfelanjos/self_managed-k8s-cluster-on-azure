@@ -21,14 +21,9 @@ variable "resource_group_name" {
 # variable "tenant_id" {
 #   type = string
 # }
-#
+
 # variable "key_vault_name" {
 #   type = string
-# }
-
-# variable "ansible_version" {
-#   type = string
-#   default = ""
 # }
 
 variable "pod_network_cidr" {
@@ -42,5 +37,5 @@ variable "control_plane_endpoint" {
 
 variable "ansible_version" {
   type    = string
-  default = "2.19.0"
+  default = "2.10.7+merged+base+2.10.8+dfsg-1"
 }

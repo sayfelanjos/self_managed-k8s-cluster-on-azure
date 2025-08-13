@@ -10,12 +10,16 @@ variable "worker_nodes_name" {
   description = "The name of the virtual machine scale set."
   type        = string
 }
-variable "master_nodes_name" {
+variable "control_planes_name" {
   description = "The name of the virtual machine scale set."
   type        = string
 }
 variable "vmss_sku" {
   description = "The SKU for the virtual machine scale set."
+  type        = string
+}
+variable "pod_network_cidr" {
+  description = "The CIDR block for the pod network."
   type        = string
 }
 variable "vmss_instance_count" {
@@ -62,19 +66,19 @@ variable "vnet_address_space" {
   type        = list(string)
   description = "Address space for the virtual network"
 }
-variable "public_subnet_name" {
+variable "worker_nodes_subnet_name" {
   description = "The name of the subnet."
   type        = string
 }
-variable "public_subnet_address_prefixes" {
+variable "worker_nodes_subnet_address_prefixes" {
   type        = list(string)
   description = "Address prefixes for the subnet"
 }
-variable "private_subnet_name" {
+variable "control_planes_subnet_name" {
   description = "The name of the subnet."
   type        = string
 }
-variable "private_subnet_address_prefixes" {
+variable "control_planes_subnet_address_prefixes" {
   type        = list(string)
   description = "Address prefixes for the subnet"
 }

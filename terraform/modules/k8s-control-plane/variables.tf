@@ -7,7 +7,7 @@ variable "location" {
   type        = string
 }
 
-variable "master_nodes_name" {
+variable "control_planes_name" {
   description = "The name of the virtual machine scale set."
   type        = string
 }
@@ -61,17 +61,22 @@ variable "os_disk_caching" {
   description = "The caching type for the OS disk."
   type        = string
 }
-variable "private_subnet_id" {
+variable "control_planes_subnet_id" {
   description = "The ID of the subnet where the virtual machine scale set will be deployed."
   type        = string
 }
 variable "lb_master_address_pool_id" {
-    description = "The ID of the load balancer backend address pool."
-    type        = string
+  description = "The ID of the load balancer backend address pool."
+  type        = string
 }
 
-variable "master_public_ip" {
-  description = "The public IP address for the master nodes load balancer."
+variable "control_plane_endpoint" {
+  description = "The endpoint for the control plane, typically the load balancer IP or DNS name."
+  type        = string
+}
+
+variable "pod_network_cidr" {
+  description = "The CIDR block for the pod network."
   type        = string
 }
 
@@ -80,7 +85,7 @@ variable "master_public_ip" {
 #     type        = string
 # }
 
-variable "master_nodes_nsg_id" {
-  type = string
+variable "control_planes_subnet_nsg_id" {
+  type        = string
   description = "The ID of the network security group for the master nodes."
 }

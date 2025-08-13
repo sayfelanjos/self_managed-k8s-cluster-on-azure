@@ -5,7 +5,7 @@ set -e
 
 # Update packages and install Ansible
 sudo apt update
-sudo apt install -y ansible
+sudo apt install -y ansible="$ANSIBLE_VERSION"
 
 # Install Azure CLI
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash

@@ -1,13 +1,14 @@
-output "public_subnet_id" {
-  value = module.vnet.public_subnet_id
+output "worker_nodes_subnet_id" {
+  value = module.vnet.worker_nodes_subnet_id
 }
 
-output "private_subnet_id" {
-  value = module.vnet.private_subnet_id
+output "control_planes_subnet_id" {
+  value = module.vnet.control_planes_subnet_id
 }
 
-output "master_public_ip" {
-  value = module.vnet.master_public_ip
+output "control_plane_endpoint" {
+  description = "The endpoint for the Control Plane of the Kubernetes cluster."
+  value       = module.vnet.control_plane_endpoint
 }
 
 output "worker_public_ip" {

@@ -1,11 +1,11 @@
 variable "resource_group_name" {
   type        = string
-    description = "The name of the resource group."
+  description = "The name of the resource group."
 }
 
 variable "location" {
   type        = string
-    description = "The Azure region where all resources should be created."
+  description = "The Azure region where all resources should be created."
 }
 
 # variable "control_plane_principal_id" {

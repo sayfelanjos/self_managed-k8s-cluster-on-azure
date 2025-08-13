@@ -4,6 +4,6 @@ variable "resource_group_name" {
 }
 
 variable "location" {
-    description = "The Azure region where the Kubernetes cluster is deployed."
-    type        = string
+  description = "The Azure region where the Kubernetes cluster is deployed."
+  type        = string
 }

@@ -1,19 +1,19 @@
-data "azurerm_image" "k8s_node_image" {
-  name = "k8s-master-image-1.28.2"
-  resource_group_name = var.resource_group_name
-}
+# data "azurerm_image" "k8s_node_image" {
+#   name                = "k8s-master-image-1.28.2"
+#   resource_group_name = var.resource_group_name
+# }
 
 resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
-  name                = var.master_nodes_name
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  sku                 = var.vmss_sku
-  instances           = var.vmss_instance_count
-  admin_username      = var.admin_username
-  vtpm_enabled = false
-  secure_boot_enabled = false
+  name                         = var.control_planes_name
+  resource_group_name          = var.resource_group_name
+  location                     = var.location
+  sku                          = var.vmss_sku
+  instances                    = var.vmss_instance_count
+  admin_username               = var.admin_username
+  vtpm_enabled                 = false
+  secure_boot_enabled          = false
   extension_operations_enabled = true
-  overprovision = false
+  overprovision                = false
 
   boot_diagnostics {
     storage_account_uri = null
@@ -28,14 +28,14 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
     type = "SystemAssigned"
   }
 
-  # source_image_reference {
-  #   offer     = var.source_image_offer
-  #   publisher = var.source_image_publisher
-  #   sku       = var.source_image_sku
-  #   version   = var.source_image_version
-  # }
+  source_image_reference {
+    offer     = var.source_image_offer
+    publisher = var.source_image_publisher
+    sku       = var.source_image_sku
+    version   = var.source_image_version
+  }
 
-  source_image_id = data.azurerm_image.k8s_node_image.id
+  # source_image_id = data.azurerm_image.k8s_node_image.id
 
   os_disk {
     caching                   = var.os_disk_caching
@@ -49,10 +49,15 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
     # network_security_group_id = var.master_nodes_nsg_id
 
     ip_configuration {
-      name      = "k8s-master-nodes-ipconfig"
-      subnet_id = var.private_subnet_id
-      primary   = true
+      name                                   = "k8s-master-nodes-ipconfig"
+      subnet_id                              = var.control_planes_subnet_id
+      primary                                = true
       load_balancer_backend_address_pool_ids = [var.lb_master_address_pool_id]
     }
   }
+
+  custom_data = base64encode(templatefile("${path.module}/run_ansible.sh", {
+    control_plane_endpoint = var.control_plane_endpoint
+    pod_network_cidr       = var.pod_network_cidr
+  }))
 }

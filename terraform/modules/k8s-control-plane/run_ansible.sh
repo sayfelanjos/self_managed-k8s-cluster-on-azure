@@ -9,7 +9,7 @@ sudo apt update
 # update-alternatives --set iptables /usr/sbin/iptables-legacy &&
 # update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy &&
 # systemctl restart walinuxagent
-sudo apt install -y ansible=${ansible_version}
+sudo apt install -y ansible
 
 
 # Install Azure CLI
@@ -29,5 +29,4 @@ git sparse-checkout set ansible
 ansible-playbook -i ansible/inventories/hosts/hosts.ini \
   --connection=local  \
   ansible/install_master.yaml \
-  --extra-vars control_plane_endpoint=${control_plane_endpoint} \
-  --extra-vars kv_uri=${kv_uri}
+  --extra-vars control_plane_endpoint=${control_plane_endpoint}

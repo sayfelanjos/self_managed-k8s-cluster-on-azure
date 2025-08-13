@@ -14,17 +14,17 @@
       ansible.builtin.include_tasks: tasks/containerd.yaml
     - name: Install Kubernetes components
       ansible.builtin.import_tasks: tasks/kube_install.yaml
-#    - name: Initialize Kubernetes Master
-#      ansible.builtin.import_tasks: tasks/master_init.yaml
+    - name: Initialize Kubernetes Master
+      ansible.builtin.import_tasks: tasks/master_init.yaml
 
-#- name: Setup Master Access
-#  hosts: localhosts
-#  tasks:
-#    - name: Setup kubeconfig for master access
-#      ansible.builtin.include_tasks: tasks/setup_master_access.yaml
-#
-#- name: Install Pod Network Add-on (e.g., Flannel)
-#  hosts: localhosts
-#  tasks:
-#    - name: Install Pod Network Add-on
-#      ansible.builtin.include_tasks: tasks/pod_network.yaml
+- name: Setup Master Access
+  hosts: localhosts
+  tasks:
+    - name: Setup kubeconfig for master access
+      ansible.builtin.include_tasks: tasks/setup_master_access.yaml
+
+- name: Install Pod Network Add-on (e.g., Flannel)
+  hosts: localhosts
+  tasks:
+    - name: Install Pod Network Add-on
+      ansible.builtin.include_tasks: tasks/pod_network.yaml

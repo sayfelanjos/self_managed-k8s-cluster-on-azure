@@ -2,7 +2,7 @@ module "k8s-cluster" {
   source                          = "../modules/k8s-cluster"
   resource_group_name             = var.resource_group_name
   location                        = var.location
-  master_nodes_name               = var.master_nodes_name
+  control_planes_name               = var.control_planes_name
   worker_nodes_name               = var.worker_nodes_name
   vmss_instance_count             = var.vmss_instance_count
   vmss_sku                        = var.vmss_sku
@@ -14,13 +14,14 @@ module "k8s-cluster" {
   admin_ssh_key                   = var.admin_ssh_key
   vnet_name                       = var.vnet_name
   vnet_address_space              = var.vnet_address_space
-  private_subnet_name             = var.private_subnet_name
-  private_subnet_address_prefixes = var.private_subnet_address_prefixes
-  private_subnet_id               = module.k8s-cluster.private_subnet_id
-  public_subnet_name              = var.public_subnet_name
-  public_subnet_address_prefixes  = var.public_subnet_address_prefixes
-  public_subnet_id                = module.k8s-cluster.public_subnet_id
+  control_planes_subnet_name             = var.control_planes_subnet_name
+  control_planes_subnet_address_prefixes = var.control_planes_subnet_address_prefixes
+  control_planes_subnet_id               = module.k8s-cluster.control_planes_subnet_id
+  worker_nodes_subnet_name              = var.worker_nodes_subnet_name
+  worker_nodes_subnet_address_prefixes  = var.worker_nodes_subnet_address_prefixes
+  worker_nodes_subnet_id                = module.k8s-cluster.worker_nodes_subnet_id
   os_disk_caching                 = var.os_disk_caching
   os_disk_storage_account_type    = var.os_disk_storage_account_type
+  pod_network_cidr                = var.pod_network_cidr
   # kv_uri                          = azurerm_key_vault.kv.vault_uri
 }

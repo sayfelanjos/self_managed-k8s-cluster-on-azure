@@ -27,7 +27,12 @@ resource "azurerm_nat_gateway_public_ip_association" "nat_ip_association" {
 
 # Associate the NAT Gateway with your Kubernetes Subnet
 # This tells the subnet to use the NAT Gateway for all outbound traffic.
-resource "azurerm_subnet_nat_gateway_association" "subnet_association" {
-  subnet_id      = azurerm_subnet.k8s_private_subnet.id
+resource "azurerm_subnet_nat_gateway_association" "control_planes_subnet_association" {
+  subnet_id      = azurerm_subnet.control_planes_subnet.id
+  nat_gateway_id = azurerm_nat_gateway.nat_gateway.id
+}
+
+resource "azurerm_subnet_nat_gateway_association" "worker_nodes_subnet_association" {
+  subnet_id      = azurerm_subnet.worker_nodes_subnet.id
   nat_gateway_id = azurerm_nat_gateway.nat_gateway.id
 }

@@ -9,15 +9,16 @@ module "k8s-control-plane" {
   source_image_sku             = var.source_image_sku
   source_image_version         = var.source_image_version
   vmss_instance_count          = var.vmss_instance_count
-  master_nodes_name            = var.master_nodes_name
+  control_planes_name            = var.control_planes_name
   vmss_sku                     = var.vmss_sku
-  private_subnet_id            = var.private_subnet_id
+  control_planes_subnet_id            = var.control_planes_subnet_id
   os_disk_caching              = var.os_disk_caching
   os_disk_storage_account_type = var.os_disk_storage_account_type
   lb_master_address_pool_id    = module.vnet.lb_master_address_pool_id
-  master_public_ip             = module.vnet.master_public_ip
+  control_plane_endpoint       = module.vnet.control_plane_endpoint
+  pod_network_cidr             = var.pod_network_cidr
   # kv_uri                       = var.kv_uri
-  master_nodes_nsg_id         = module.vnet.master_nodes_nsg_id
+  control_planes_subnet_nsg_id = module.vnet.control_planes_subnet_nsg_id
 }
 
 module "k8s-worker-nodes" {
@@ -33,22 +34,23 @@ module "k8s-worker-nodes" {
   vmss_instance_count          = var.vmss_instance_count
   worker_nodes_name            = var.worker_nodes_name
   vmss_sku                     = var.vmss_sku
-  public_subnet_id             = var.public_subnet_id
+  worker_nodes_subnet_id            = var.worker_nodes_subnet_id
   os_disk_caching              = var.os_disk_caching
   os_disk_storage_account_type = var.os_disk_storage_account_type
   lb_worker_address_pool_id    = module.vnet.lb_worker_address_pool_id
+  control_plane_endpoint       = module.vnet.control_plane_endpoint
 }
 
 module "vnet" {
-  source                         = "../k8s-network"
-  vnet_name                      = var.vnet_name
-  resource_group_name            = var.resource_group_name
-  location                       = var.location
-  vnet_address_space             = var.vnet_address_space
-  public_subnet_name                    = var.public_subnet_name
-  private_subnet_name                    = var.private_subnet_name
-  private_subnet_address_prefixes = var.private_subnet_address_prefixes
-  public_subnet_address_prefixes = var.public_subnet_address_prefixes
-  tags                           = var.tags
-  master_nodes_name = var.master_nodes_name
+  source                          = "../k8s-network"
+  vnet_name                       = var.vnet_name
+  resource_group_name             = var.resource_group_name
+  location                        = var.location
+  vnet_address_space              = var.vnet_address_space
+  worker_nodes_subnet_name              = var.worker_nodes_subnet_name
+  control_planes_subnet_name             = var.control_planes_subnet_name
+  control_planes_subnet_address_prefixes = var.control_planes_subnet_address_prefixes
+  worker_nodes_subnet_address_prefixes  = var.worker_nodes_subnet_address_prefixes
+  tags                            = var.tags
+  control_planes_name               = var.control_planes_name
 }

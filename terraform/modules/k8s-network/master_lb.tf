@@ -53,7 +53,7 @@ resource "azurerm_lb_rule" "k8s_master_rule" {
   frontend_ip_configuration_name = azurerm_public_ip.k8s_master_lb_pip.name
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.k8s_master_bkeapool.id]
   probe_id                       = azurerm_lb_probe.k8s_master_probe.id
-  disable_outbound_snat = true
+  disable_outbound_snat          = true
 }
 
 resource "azurerm_lb_nat_rule" "k8s_master_nat_rule" {
@@ -64,6 +64,6 @@ resource "azurerm_lb_nat_rule" "k8s_master_nat_rule" {
   frontend_port_start            = 50000
   frontend_port_end              = 50050
   backend_port                   = 22
-  backend_address_pool_id = azurerm_lb_backend_address_pool.k8s_master_bkeapool.id
+  backend_address_pool_id        = azurerm_lb_backend_address_pool.k8s_master_bkeapool.id
   frontend_ip_configuration_name = azurerm_public_ip.k8s_master_lb_pip.name
 }
