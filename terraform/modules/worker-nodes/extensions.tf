@@ -8,7 +8,7 @@
 # # }
 #
 # resource "azurerm_virtual_machine_scale_set_extension" "setup_k8s_worker_nodes" {
-#   name                         = "setup-k8s-worker-nodes"
+#   name                         = "setup-worker-nodes"
 #   virtual_machine_scale_set_id = azurerm_linux_virtual_machine_scale_set.k8s_worker_nodes.id
 #   publisher                    = "Microsoft.Azure.Extensions"
 #   type                         = "CustomScript"

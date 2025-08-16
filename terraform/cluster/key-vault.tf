@@ -14,7 +14,7 @@ resource "random_string" "kv_suffix" {
 
 # Create the Azure Key Vault.
 resource "azurerm_key_vault" "kv" {
-  name                       = "k8s-cluster-kv-${random_string.kv_suffix.result}"
+  name                       = "cluster-kv-${random_string.kv_suffix.result}"
   resource_group_name        = var.resource_group_name
   location                   = var.location
   tenant_id                  = data.azurerm_client_config.current.tenant_id
@@ -33,10 +33,10 @@ resource "azurerm_key_vault" "kv" {
   }
 }
 
-resource "azurerm_key_vault_access_policy" "master_policy" {
+resource "azurerm_key_vault_access_policy" "control_plane_policy" {
   key_vault_id = azurerm_key_vault.kv.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_user_assigned_identity.master_identity.client_id
+  object_id    = azurerm_user_assigned_identity.control_plane_uai.client_id
 
   # Specify permissions for secrets
   secret_permissions = [
@@ -44,10 +44,10 @@ resource "azurerm_key_vault_access_policy" "master_policy" {
   ]
 }
 
-resource "azurerm_key_vault_access_policy" "worker_policy" {
+resource "azurerm_key_vault_access_policy" "worker_node_policy" {
   key_vault_id = azurerm_key_vault.kv.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_user_assigned_identity.worker_identity.client_id
+  object_id    = azurerm_user_assigned_identity.worker_node_uai.client_id
 
   # Specify permissions for secrets
   secret_permissions = [

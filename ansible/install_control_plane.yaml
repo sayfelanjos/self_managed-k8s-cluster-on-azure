@@ -1,0 +1,20 @@
+---
+- name: Setup Kubernetes Control Plane
+  hosts: localhost
+  become: yes
+  vars:
+  tasks:
+    - name: Initialize Kubernetes Master
+      ansible.builtin.import_tasks: tasks/control_plane_init.yaml
+
+- name: Setup Master Access
+  hosts: localhost
+  tasks:
+    - name: Setup kubeconfig for master access
+      ansible.builtin.include_tasks: tasks/setup_master_access.yaml
+
+- name: Install Pod Network Add-on (e.g., Flannel)
+  hosts: localhost
+  tasks:
+    - name: Install Pod Network Add-on
+      ansible.builtin.include_tasks: tasks/pod_network.yaml

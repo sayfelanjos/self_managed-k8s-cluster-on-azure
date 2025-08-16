@@ -57,6 +57,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
   }
 
   custom_data = base64encode(templatefile("${path.module}/run_ansible.sh", {
+    pod_network_cidr       = var.pod_network_cidr
     control_plane_endpoint = var.control_plane_endpoint
   }))
 }

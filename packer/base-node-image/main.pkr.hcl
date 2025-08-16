@@ -12,8 +12,15 @@ source "azure-arm" "master" {
   image_sku                         = "22_04-lts-gen2"
   location                          = "East US"
   vm_size                           = "Standard_D4s_v4"
-  managed_image_name                = "k8s-master-image-1.28.2"
-  managed_image_resource_group_name = var.resource_group_name
+
+  shared_image_gallery_destination {
+    resource_group  = "cluster-image-gallery-rg"
+    gallery_name    = "cluster-image-gallery"
+    image_name      = "ubuntu-jammy-base-node-image"
+    image_version   = "1.0.0"
+    replication_regions = ["East US"]
+  }
+
 }
 
 build {
@@ -31,4 +38,5 @@ build {
       # "CLIENT_ID=${var.client_id}"
     ]
   }
+
 }

@@ -1,0 +1,8 @@
+---
+- name: Setup Kubernetes Worker Node
+  hosts: localhost
+  become: yes
+  vars:
+  tasks:
+    - name: Join Kubernetes Workers to Cluster
+      ansible.builtin.import_tasks: tasks/worker_join.yaml

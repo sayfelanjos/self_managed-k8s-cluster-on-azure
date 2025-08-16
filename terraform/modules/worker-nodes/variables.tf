@@ -74,3 +74,7 @@ variable "control_plane_endpoint" {
   type        = string
   description = "The control plane endpoint."
 }
+variable "pod_network_cidr" {
+  description = "The CIDR block for the pod network."
+  type        = string
+}
