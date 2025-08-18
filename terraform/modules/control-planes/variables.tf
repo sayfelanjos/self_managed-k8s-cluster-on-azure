@@ -80,10 +80,10 @@ variable "pod_network_cidr" {
   type        = string
 }
 
-# variable "kv_uri" {
-#     description = "The URI of the Azure Key Vault."
-#     type        = string
-# }
+variable "kv_uri" {
+  description = "The URI of the Azure Key Vault."
+  type        = string
+}
 
 variable "control_planes_subnet_nsg_id" {
   type        = string

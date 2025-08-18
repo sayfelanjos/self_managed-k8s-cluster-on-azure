@@ -1,12 +1,12 @@
-resource "azurerm_resource_group" "cluster_rg" {
+resource "azurerm_resource_group" "k8s_cluster_rg" {
   name     = var.resource_group_name
   location = var.location
 }
 
 module "k8s-cluster" {
   source                                 = "../modules/cluster"
-  resource_group_name                    = var.resource_group_name
-  location                               = var.location
+  resource_group_name                    = azurerm_resource_group.k8s_cluster_rg.name
+  location                               = azurerm_resource_group.k8s_cluster_rg.location
   control_planes_name                    = var.control_planes_name
   worker_nodes_name                      = var.worker_nodes_name
   vmss_instance_count                    = var.vmss_instance_count
@@ -28,5 +28,5 @@ module "k8s-cluster" {
   os_disk_caching                        = var.os_disk_caching
   os_disk_storage_account_type           = var.os_disk_storage_account_type
   pod_network_cidr                       = var.pod_network_cidr
-  # kv_uri                          = azurerm_key_vault.kv.vault_uri
+  kv_uri                                 = azurerm_key_vault.kv.vault_uri
 }

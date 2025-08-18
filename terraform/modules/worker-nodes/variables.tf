@@ -78,3 +78,7 @@ variable "pod_network_cidr" {
   description = "The CIDR block for the pod network."
   type        = string
 }
+variable "kv_uri" {
+  description = "The URI of the Azure Key Vault."
+  type        = string
+}

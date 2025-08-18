@@ -1,2 +1,2 @@
-resource_group_name = "cluster-image-gallery-rg"
+resource_group_name = "k8s-image-gallery-rg"
 location            = "East US"

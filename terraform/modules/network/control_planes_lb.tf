@@ -1,6 +1,6 @@
 # Create a Public IP for the Load Balancer
 resource "azurerm_public_ip" "control_planes_lb_pip" {
-  name                = "k8s-master-lb-pip"
+  name                = "control-planes-lb-pip"
   resource_group_name = var.resource_group_name
   location            = var.location
   allocation_method   = "Static"
@@ -9,7 +9,7 @@ resource "azurerm_public_ip" "control_planes_lb_pip" {
 
 # Create the Load Balancer itself
 resource "azurerm_lb" "control_planes_lb" {
-  name                = "k8s-master-lb"
+  name                = "control-planes-lb"
   resource_group_name = var.resource_group_name
   location            = var.location
   sku                 = "Standard"
@@ -22,12 +22,12 @@ resource "azurerm_lb" "control_planes_lb" {
 
 # Create the Backend Address Pool
 resource "azurerm_lb_backend_address_pool" "control_planes_bkeapool" {
-  name            = "k8s-master-backend-pool"
+  name            = "control-planes-backend-pool"
   loadbalancer_id = azurerm_lb.control_planes_lb.id
 }
 
 # resource "azurerm_lb_backend_address_pool_address" "control_planes_node_1_ip" {
-#   name                    = "k8s-master-node-1-ip"
+#   name                    = "control-planes-node-1-ip"
 #   backend_address_pool_id = azurerm_lb_backend_address_pool.control_planes_bkeapool.id
 #   virtual_network_id      = azurerm_virtual_network.vnet.id
 #   ip_address              = "10.20.1.6" # Static IP of the first master node
@@ -59,7 +59,7 @@ resource "azurerm_lb_rule" "control_planes_rule" {
 resource "azurerm_lb_nat_rule" "control_planes_nat_rule" {
   resource_group_name            = azurerm_lb.control_planes_lb.resource_group_name
   loadbalancer_id                = azurerm_lb.control_planes_lb.id
-  name                           = "k8s-master-nat-rule"
+  name                           = "control-planes-nat-rule"
   protocol                       = "Tcp"
   frontend_port_start            = 50000
   frontend_port_end              = 50050

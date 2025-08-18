@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="TemplateDataLanguageMappings">
-    <file url="file://$PROJECT_DIR$/terraform/modules/control-planes/run_ansible.sh" dialect="Shell Script" />
+    <file url="file://$PROJECT_DIR$/terraform/modules/control-planes/control-plane-init.sh" dialect="Shell Script" />
   </component>
 </project>

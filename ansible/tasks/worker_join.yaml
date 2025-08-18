@@ -1,6 +1,0 @@
----
-- name: Join worker node to Kubernetes cluster
-  ansible.builtin.command: "{{ hostvars['k8s-master']['k8s_join_command'] }}"
-  register: join_output
-  failed_when: "'This node has joined the cluster' not in join_output.stdout and 'already a member of the cluster' not in join_output.stderr"
-  when: "'This node has joined the cluster' not in join_output.stdout and 'already a member of the cluster' not in join_output.stderr"

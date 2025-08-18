@@ -17,7 +17,7 @@ module "k8s-control-plane" {
   lb_master_address_pool_id    = module.vnet.lb_master_address_pool_id
   control_plane_endpoint       = module.vnet.control_plane_endpoint
   pod_network_cidr             = var.pod_network_cidr
-  # kv_uri                       = var.kv_uri
+  kv_uri                       = var.kv_uri
   control_planes_subnet_nsg_id = module.vnet.control_planes_subnet_nsg_id
 }
 
@@ -40,6 +40,7 @@ module "k8s-worker-nodes" {
   lb_worker_address_pool_id    = module.vnet.lb_worker_address_pool_id
   control_plane_endpoint       = module.vnet.control_plane_endpoint
   pod_network_cidr             = var.pod_network_cidr
+  kv_uri                       = var.kv_uri
 }
 
 module "vnet" {

@@ -17,14 +17,14 @@
 #
 #   #   protected_settings = <<PROTECTED_SETTINGS
 #   #     {
-#   #       "script": "${base64encode(file("${path.module}/run_ansible.sh"))}"
+#   #       "script": "${base64encode(file("${path.module}/control-plane-init.sh"))}"
 #   #     }
 #   # PROTECTED_SETTINGS
 #
 #   # settings = jsonencode({
 #   #   # timeout = "PT5M"
-#   #   # force_run = sha256(file("${path.module}/run_ansible.sh"))
-#   #   # script = file("${path.module}/run_ansible.sh")
+#   #   # force_run = sha256(file("${path.module}/control-plane-init.sh"))
+#   #   # script = file("${path.module}/control-plane-init.sh")
 #   #   commandToExecute = "sh echo $HOSTNAME"
 #   # })
 #

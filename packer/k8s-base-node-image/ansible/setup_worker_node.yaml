@@ -5,4 +5,4 @@
   vars:
   tasks:
     - name: Join Kubernetes Workers to Cluster
-      ansible.builtin.import_tasks: tasks/worker_join.yaml
+      ansible.builtin.import_tasks: tasks/worker_node_init.yaml

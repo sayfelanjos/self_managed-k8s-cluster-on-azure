@@ -1,8 +1,3 @@
-# data "azurerm_image" "k8s_node_image" {
-#   name                = "k8s-master-image-1.28.2"
-#   resource_group_name = var.resource_group_name
-# }
-
 resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
   name                         = var.worker_nodes_name
   resource_group_name          = var.resource_group_name
@@ -29,14 +24,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
     type = "SystemAssigned"
   }
 
-  source_image_reference {
-    offer     = var.source_image_offer
-    publisher = var.source_image_publisher
-    sku       = var.source_image_sku
-    version   = var.source_image_version
-  }
-
-  # source_image_id = data.azurerm_image.k8s_node_image.id
+  source_image_id = "/subscriptions/5c61423a-be60-4fbb-a575-7999e5429920/resourceGroups/k8s-image-gallery-rg/providers/Microsoft.Compute/galleries/k8simagegallery/images/k8s-base-node-image/versions/1.0.0"
 
   os_disk {
     caching                   = var.os_disk_caching
@@ -56,8 +44,9 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
     }
   }
 
-  custom_data = base64encode(templatefile("${path.module}/run_ansible.sh", {
-    pod_network_cidr       = var.pod_network_cidr
+  custom_data = base64encode(templatefile("${path.module}/worker-node-init.sh", {
     control_plane_endpoint = var.control_plane_endpoint
+    pod_network_cidr       = var.pod_network_cidr
+    kv_uri                 = var.kv_uri
   }))
 }

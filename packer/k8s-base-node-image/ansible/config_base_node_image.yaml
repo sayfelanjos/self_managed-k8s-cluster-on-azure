@@ -9,7 +9,7 @@
     kubernetes_repo_base_url: "https://pkgs.k8s.io/core:/stable:/"
   tasks:
     - name: Ensure prerequisites are installed
-      ansible.builtin.include_tasks: tasks/common.yaml
+      ansible.builtin.include_tasks: tasks/initial_config.yaml
     - name: Install containerd
       ansible.builtin.include_tasks: tasks/containerd.yaml
     - name: Install Kubernetes components
