@@ -1,18 +1,23 @@
 ---
 - name: Create .kube directory for kubeconfig
+  become: yes
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.kube"
+    path: "/home/{{ ansible_user }}/.kube"
     state: directory
     mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
 
 - name: Copy admin.conf to .kube/config
   become: yes
-  ansible.builtin.fetch:
-    src: /etc/kubernetes/admin.conf
-    dest: "{{ ansible_env.HOME }}/.kube/config"
-    flat: yes
+  ansible.builtin.command:
+    cmd: cp /etc/kubernetes/admin.conf /home/{{ ansible_user }}/.kube/config
 
-- name: Set correct permissions on kubeconfig
+- name: Set correct permissions and ownership on kubeconfig
+  become: yes
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.kube/config"
+    path: "/home/{{ ansible_user }}/.kube/config"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0600'
+

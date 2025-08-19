@@ -15,8 +15,8 @@ resource "random_string" "kv_suffix" {
 # Create the Azure Key Vault.
 resource "azurerm_key_vault" "kv" {
   name                       = "cluster-kv-${random_string.kv_suffix.result}"
-  resource_group_name        = azurerm_resource_group.cluster_rg.name
-  location                   = azurerm_resource_group.cluster_rg.location
+  resource_group_name        = azurerm_resource_group.k8s_cluster_rg.name
+  location                   = azurerm_resource_group.k8s_cluster_rg.location
   tenant_id                  = data.azurerm_client_config.current.tenant_id
   sku_name                   = "standard"
   soft_delete_retention_days = 7
