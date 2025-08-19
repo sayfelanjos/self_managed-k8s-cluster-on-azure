@@ -4,6 +4,7 @@ source_image_sku       = "cvm"
 source_image_publisher = "Canonical"
 source_image_offer     = "ubuntu-24_04-lts"
 source_image_version   = "latest"
+k8s_base_node_image_id = "/subscriptions/5c61423a-be60-4fbb-a575-7999e5429920/resourceGroups/k8s-image-gallery-rg/providers/Microsoft.Compute/galleries/k8simagegallery/images/k8s-base-node-image/versions/1.0.0"
 
 # The worker and master node names can't have numbers in their names, as Azure will append
 # a sequential number in the final of the name automatically, and this number will be used by the
