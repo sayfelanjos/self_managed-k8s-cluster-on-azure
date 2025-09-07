@@ -82,6 +82,27 @@ variable "kv_uri" {
   description = "The URI of the Azure Key Vault."
   type        = string
 }
+variable "kv_name" {
+  description = "The name of the Azure Key Vault."
+  type        = string
+}
+variable "worker_nodes_user_assigned_identity_id" {
+  type        = string
+  description = "The user-assigned identity ID to be assigned to the worker nodes."
+}
+variable "worker_nodes_user_assigned_identity_client_id" {
+  type        = string
+  description = "The user-assigned identity client ID to be assigned to the worker nodes."
+}
+variable "subscription_id" {
+  type        = string
+  description = "The subscription ID to use for the control plane nodes."
+}
+variable "ansible_core_version" {
+  type        = string
+  default     = "2.16.2"
+  description = "The version of Ansible core to be used in the control plane setup."
+}
 variable "k8s_base_node_image_id" {
   type = string
 }

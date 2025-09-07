@@ -1,58 +1,173 @@
 ---
-- name: Initialize the Kubernetes cluster
-  ansible.builtin.command: |
-    kubeadm init \
-      --pod-network-cidr={{ pod_network_cidr }} \
-      --control-plane-endpoint="{{ control_plane_endpoint }}:6443" \
-      --apiserver-advertise-address="{{ ansible_default_ipv4.address }}" \
-      --upload-certs
-  args:
-    # This is the key for idempotency:
-    # The command will NOT run if this file already exists.
-    creates: /etc/kubernetes/admin.conf
+# This playbook implements HA control plane bootstrap with Azure Key Vault coordination.
+# Workflow:
+# 1) If control-plane join secret exists => join path.
+# 2) Else try to acquire init lock => if we get it => initialize, store secrets; else wait and join.
 
+- name: Check if control-plane join command already exists in Key Vault
+  azure.azcollection.azure_rm_keyvaultsecret_info:
+    vault_uri: "https://{{ kv_name }}.vault.azure.net/"
+    name: "k8s-control-plane-join-command"
+    subscription_id: "{{ subscription_id }}"
+    client_id: "{{ uai_client_id }}"
+    auth_source: "msi"
+  register: cp_join_info
+  failed_when: false
 
-# Add a pause or wait for pods to be ready if needed
-
-- name: Get kubeadm join command for workers
-  ansible.builtin.command: kubeadm token create --print-join-command
-  register: kubeadm_join_command
-  changed_when: false
-
-- name: Get kubeadm join command for masters
-  ansible.builtin.command: kubeadm init phase upload-certs --upload-certs
-  register: certs_key
-  changed_when: false
-
-- name: Test Key Vault access
-  azure.azcollection.azure_rm_keyvaultinfo:
-    name: "{{ kv_name }}"
-    resource_group: "{{ resource_group_name }}"
-  register: kv_info
-
-- name: Display Key Vault info
-  debug:
-    var: kv_info
-
-- name: Set a secret in Key Vault
-  azure.azcollection.azure_rm_keyvaultsecret:
-    # Replace with the name of your Key Vault (from Terraform output)
-    keyvault_uri: {{ kv_uri }}
-    secret_name: "k8s_worker_join_command"
-    secret_value: "{{ kubeadm_join_command.stdout }}"
-  register: output
-
-- name: Display the result
-  debug:
-    var: output
-
-- name: Set fact with join command
+- name: Set fact whether join secret exists
   ansible.builtin.set_fact:
-    k8s_join_command: "{{ kubeadm_join_command.stdout }}"
+    cp_join_exists: "{{ (cp_join_info.secrets is defined) and (cp_join_info.secrets | length > 0) }}"
 
-- name: Mark master as initialized (to prevent re-initialization)
-  ansible.builtin.set_fact:
-    k8s_master_initialized: true
+- name: Join Path - Retrieve join command and certificate key
+  when: cp_join_exists | bool
+  block:
+    - name: Get control-plane join command
+      azure.azcollection.azure_rm_keyvaultsecret:
+        client_id: "{{ uai_client_id }}"
+        subscription_id: "{{ subscription_id }}"
+        auth_source: "msi"
+        keyvault_uri: "https://{{ kv_name }}.vault.azure.net/"
+        secret_name: "k8s-control-plane-join-command"
+      register: cp_join_cmd
+      no_log: true
 
-# ansible-playbook -i /var/tmp/ansible/inventories/hosts/hosts.ini /var/tmp/ansible/setup_control_plane.yaml --extra-var "control_plane_endpoint=172.174.23.162" --extra-var "pod_network_cidr=10.244
-#.0.0/16" --extra-var "kv_uri=https://cluster-kv-82npeuop.vault.azure.net/" --extra-var "ansible_user=azureadmin" --extra-var "kv_name=cluster-kv-82npeuop" --extra-var "resource_group_name=self-managed-k8s-cluster-rg"
+    - name: Execute control-plane join command (idempotent)
+      ansible.builtin.command: "{{ cp_join_cmd.state.secret_value }}"
+      args:
+        creates: /etc/kubernetes/admin.conf
+      register: join_output
+      changed_when: "'This node has joined the cluster' in join_output.stdout"
+
+- name: Initialize Path - Try to acquire init lock
+  when: not (cp_join_exists | bool)
+  block:
+    - name: Check for existing init lock
+      azure.azcollection.azure_rm_keyvaultsecret_info:
+        vault_uri: "https://{{ kv_name }}.vault.azure.net/"
+        name: "k8s-init-lock"
+        subscription_id: "{{ subscription_id }}"
+        client_id: "{{ uai_client_id }}"
+        auth_source: "msi"
+      register: lock_info
+      failed_when: false
+
+    - name: Attempt to create init lock if not exists
+      azure.azcollection.azure_rm_keyvaultsecret:
+        client_id: "{{ uai_client_id }}"
+        subscription_id: "{{ subscription_id }}"
+        auth_source: "msi"
+        keyvault_uri: "https://{{ kv_name }}.vault.azure.net/"
+        secret_name: "k8s-init-lock"
+        secret_value: "{{ ansible_hostname }}-{{ ansible_date_time.iso8601 }}"
+      when: not (lock_info.secrets is defined and lock_info.secrets | length > 0)
+      register: create_lock_result
+
+    - name: Recheck init lock after attempt
+      azure.azcollection.azure_rm_keyvaultsecret_info:
+        vault_uri: "https://{{ kv_name }}.vault.azure.net/"
+        name: "k8s-init-lock"
+        subscription_id: "{{ subscription_id }}"
+        client_id: "{{ uai_client_id }}"
+        auth_source: "msi"
+      register: lock_info_after
+      failed_when: false
+
+    - name: Set fact if we own the lock (best-effort)
+      ansible.builtin.set_fact:
+        we_own_lock: true
+      when: not (lock_info.secrets is defined and lock_info.secrets | length > 0)
+
+    - name: Determine init or wait
+      ansible.builtin.set_fact:
+        do_init: "{{ (we_own_lock | default(false)) or (create_lock_result is defined and (create_lock_result.changed | default(false))) }}"
+
+    - name: Initializer block - run kubeadm init and publish secrets
+      when: do_init | bool
+      block:
+        - name: Initialize the Kubernetes cluster (first control plane)
+          ansible.builtin.command: |
+            kubeadm init \
+              --pod-network-cidr={{ pod_network_cidr }} \
+              --control-plane-endpoint="{{ control_plane_endpoint }}:6443" \
+              --apiserver-advertise-address="{{ ansible_default_ipv4.address }}" \
+              --upload-certs
+          args:
+            creates: /etc/kubernetes/admin.conf
+
+        - name: Ensure a non-expiring worker join command exists
+          ansible.builtin.command: kubeadm token create --ttl 0 --print-join-command
+          register: worker_join
+          changed_when: false
+
+        - name: Upload certs and capture certificate key
+          ansible.builtin.command: kubeadm init phase upload-certs --upload-certs
+          register: certs_out
+          changed_when: false
+
+        - name: Extract certificate key from output
+          ansible.builtin.set_fact:
+            cert_key: "{{ (certs_out.stdout_lines | last) | trim }}"
+
+        - name: Compose control-plane join command
+          ansible.builtin.set_fact:
+            cp_join_command: "{{ worker_join.stdout }} --control-plane --certificate-key {{ cert_key }}"
+
+        - name: Store worker join command in Key Vault
+          azure.azcollection.azure_rm_keyvaultsecret:
+            client_id: "{{ uai_client_id }}"
+            subscription_id: "{{ subscription_id }}"
+            auth_source: "msi"
+            keyvault_uri: "https://{{ kv_name }}.vault.azure.net/"
+            secret_name: "k8s-worker-join-command"
+            secret_value: "{{ worker_join.stdout }}"
+
+        - name: Store certificate key in Key Vault
+          azure.azcollection.azure_rm_keyvaultsecret:
+            client_id: "{{ uai_client_id }}"
+            subscription_id: "{{ subscription_id }}"
+            auth_source: "msi"
+            keyvault_uri: "https://{{ kv_name }}.vault.azure.net/"
+            secret_name: "k8s-certificate-key"
+            secret_value: "{{ cert_key }}"
+
+        - name: Store control-plane join command in Key Vault
+          azure.azcollection.azure_rm_keyvaultsecret:
+            client_id: "{{ uai_client_id }}"
+            subscription_id: "{{ subscription_id }}"
+            auth_source: "msi"
+            keyvault_uri: "https://{{ kv_name }}.vault.azure.net/"
+            secret_name: "k8s-control-plane-join-command"
+            secret_value: "{{ cp_join_command }}"
+
+    - name: Fallback to Join Path - wait for join secret then join
+      when: not (do_init | default(false))
+      block:
+        - name: Wait for control-plane join command to be available
+          azure.azcollection.azure_rm_keyvaultsecret_info:
+            vault_uri: "https://{{ kv_name }}.vault.azure.net/"
+            name: "k8s-control-plane-join-command"
+            subscription_id: "{{ subscription_id }}"
+            client_id: "{{ uai_client_id }}"
+            auth_source: "msi"
+          register: wait_cp_join
+          retries: 20
+          delay: 15
+          until: wait_cp_join.secrets is defined and wait_cp_join.secrets | length > 0
+
+        - name: Retrieve control-plane join command
+          azure.azcollection.azure_rm_keyvaultsecret:
+            client_id: "{{ uai_client_id }}"
+            subscription_id: "{{ subscription_id }}"
+            auth_source: "msi"
+            keyvault_uri: "https://{{ kv_name }}.vault.azure.net/"
+            secret_name: "k8s-control-plane-join-command"
+          register: cp_join_cmd2
+          no_log: true
+
+        - name: Execute control-plane join command (idempotent)
+          ansible.builtin.command: "{{ cp_join_cmd2.state.secret_value }}"
+          args:
+            creates: /etc/kubernetes/admin.conf
+          register: join_output2
+          changed_when: "'This node has joined the cluster' in join_output2.stdout"
+

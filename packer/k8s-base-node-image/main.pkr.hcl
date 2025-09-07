@@ -23,12 +23,14 @@ build {
   sources = ["source.azure-arm.k8s-base-node-image"]
 
   provisioner "file" {
-    source = "ansible"
+    source = "packer/k8s-base-node-image/ansible"
     destination = "/var/tmp"
   }
 
   provisioner "shell" {
-    script = "scripts/k8s-base-node-config.sh"
-    environment_vars = []
+    script = "packer/k8s-base-node-image/scripts/k8s-base-node-config.sh"
+    environment_vars = [
+        "ANSIBLE_CORE_VERSION=${var.ansible_core_version}",
+    ]
   }
 }

@@ -98,9 +98,36 @@ variable "tags" {
     Project     = "KubernetesCluster"
   }
 }
+
 variable "kv_uri" {
   description = "The URI of the Key Vault to use for secrets management."
   type        = string
+}
+
+variable "kv_name" {
+  description = "The URI of the Key Vault to use for secrets management."
+  type        = string
+}
+
+variable "control_planes_user_assigned_identity_id" {
+  type        = string
+  description = "The user assigned identity ID to assign to the control planes nodes"
+}
+variable "control_planes_user_assigned_identity_client_id" {
+  type        = string
+  description = "The user-assigned identity client ID to assign to the control planes nodes"
+}
+variable "worker_nodes_user_assigned_identity_id" {
+  type        = string
+  description = "The user assigned identity ID to assign to the worker nodes"
+}
+variable "worker_nodes_user_assigned_identity_client_id" {
+  type        = string
+  description = "The user assigned identity client ID to assign to the worker nodes"
+}
+variable "subscription_id" {
+  type        = string
+  description = "The subscription ID to use for the control plane nodes."
 }
 variable "k8s_base_node_image_id" {
   type = string

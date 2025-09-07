@@ -21,7 +21,8 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
   }
 
   identity {
-    type = "SystemAssigned"
+    type         = "SystemAssigned, UserAssigned"
+    identity_ids = [var.worker_nodes_user_assigned_identity_id]
   }
 
   source_image_id = var.k8s_base_node_image_id
@@ -45,8 +46,11 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
   }
 
   custom_data = base64encode(templatefile("${path.module}/worker-node-init.sh", {
-    control_plane_endpoint = var.control_plane_endpoint
-    pod_network_cidr       = var.pod_network_cidr
-    kv_uri                 = var.kv_uri
+    ansible_core_version = var.ansible_core_version
+    resource_group_name  = var.resource_group_name
+    subscription_id      = var.subscription_id
+    uai_client_id        = var.worker_nodes_user_assigned_identity_client_id
+    ansible_user         = var.admin_username
+    kv_name              = var.kv_name
   }))
 }

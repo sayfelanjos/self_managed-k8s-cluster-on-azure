@@ -3,27 +3,39 @@
 # Exit on any error
 set -e
 
-# Update packages and install Ansible
-sudo apt-get update
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ansible
+# Switch to the ansible_user user to run the rest of the script
+sudo -u "${ansible_user}" bash <<'EOF'
 
-# Install Azure CLI
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+# Exit on any error
+set -e
 
-# Clone your git repository
-# Make sure your repository is accessible from the VM.
-# For private repos, you might need to handle credentials.
-# rm -rf /tmp/worker-node-setup
-# git clone --depth 1 --filter=blob:none https://github.com/sayfelanjos/self_managed-k8s-cluster-on-azure /tmp/worker-node-setup
-# cd /tmp/worker-node-setup
-# git sparse-checkout init --no-cone
-# git sparse-checkout set ansible
+# Create a virtual environment for Ansible
+python3 -m venv "$HOME/.ansible"
+
+# Activate the virtual environment
+source "$HOME/.ansible/bin/activate"
+
+# Upgrade pip to the latest version
+pip install --upgrade pip
+
+# Install Ansible core
+pip install ansible-core=="${ansible_core_version}"
+
+# Install the Azure collection
+ansible-galaxy collection install azure.azcollection
+
+# Install Python dependencies
+pip install -r "$HOME/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt"
 
 # Run the Ansible playbook
 # The --connection=local flag tells Ansible to run on the machine itself.
-ansible-playbook -i /root/ansible/inventories/hosts/hosts.ini \
+ansible-playbook -i /var/tmp/ansible/inventories/hosts/hosts.ini \
   --connection=local \
-  --extra-vars pod_network_cidr=${pod_network_cidr} \
-  --extra-vars control_plane_endpoint=${control_plane_endpoint} \
-  --extra-vars kv_uri=${kv_uri} \
-  /root/ansible/setup_worker_node.yaml
+  --extra-var "ansible_python_interpreter=$(which python3)" \
+  --extra-vars resource_group_name=${resource_group_name} \
+  --extra-vars kv_name=${kv_name} \
+  --extra-vars subscription_id=${subscription_id} \
+  --extra-vars uai_client_id=${uai_client_id} \
+  /var/tmp/ansible/setup_worker_node.yaml
+
+EOF

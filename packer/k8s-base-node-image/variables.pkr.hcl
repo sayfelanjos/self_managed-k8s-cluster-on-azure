@@ -35,7 +35,7 @@
 #   type    = string
 # }
 #
-# variable "ansible_version" {
-#   type    = string
-#   default = "2.10.7+merged+base+2.10.8+dfsg-1"
-# }
+variable "ansible_core_version" {
+  type    = string
+  default = "2.16.2"
+}

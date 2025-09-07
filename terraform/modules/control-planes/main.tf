@@ -20,7 +20,8 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
   }
 
   identity {
-    type = "SystemAssigned"
+    type         = "SystemAssigned, UserAssigned"
+    identity_ids = [var.control_planes_user_assigned_identity_id]
   }
 
   source_image_id = var.k8s_base_node_image_id
@@ -45,8 +46,13 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_master_nodes" {
   }
 
   custom_data = base64encode(templatefile("${path.module}/control-plane-init.sh", {
+    resource_group_name    = var.resource_group_name
     control_plane_endpoint = var.control_plane_endpoint
     pod_network_cidr       = var.pod_network_cidr
-    kv_uri                 = var.kv_uri
+    kv_name                = var.kv_name
+    ansible_user           = var.admin_username
+    uai_client_id          = var.control_planes_user_assigned_identity_client_id
+    ansible_core_version   = var.ansible_core_version
+    subscription_id        = var.subscription_id
   }))
 }

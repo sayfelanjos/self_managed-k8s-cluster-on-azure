@@ -6,13 +6,8 @@
   tasks:
     - name: Initialize Kubernetes Master
       ansible.builtin.import_tasks: tasks/control_plane_init.yaml
-
-- name: Setup Master Access
-  hosts: localhost
-  become: yes
-  tasks:
     - name: Setup kubeconfig for master access
-      ansible.builtin.include_tasks: tasks/setup_control_plane_access.yaml
+      ansible.builtin.include_tasks: tasks/setup_kubectl.yaml
 
 - name: Install Pod Network Add-on (e.g., Flannel)
   hosts: localhost

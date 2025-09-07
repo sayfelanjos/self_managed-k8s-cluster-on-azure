@@ -34,8 +34,3 @@ variable "tags" {
   type        = map(string)
   description = "A map of tags to assign to the virtual network."
 }
-
-variable "control_planes_name" {
-  type        = string
-  description = "The name of the master nodes."
-}

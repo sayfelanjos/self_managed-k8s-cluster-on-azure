@@ -3,32 +3,44 @@
 # Exit on any error
 set -e
 
+# Switch to the ansible_user user to run the rest of the script
+sudo -u "${ansible_user}" bash <<'EOF'
 
-# Update packages and install Ansible
-sudo apt-get update
-# update-alternatives --set iptables /usr/sbin/iptables-legacy &&
-# update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy &&
-# systemctl restart walinuxagent
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ansible
+# Exit on any error
+set -e
 
+# Create a virtual environment for Ansible
+python3 -m venv "$HOME/.ansible"
 
-# Install Azure CLI
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+# Activate the virtual environment
+source "$HOME/.ansible/bin/activate"
 
-# Clone your git repository
-# Make sure your repository is accessible from the VM.
-# For private repos, you might need to handle credentials.
-# rm -rf /tmp/control-plane-setup
-# git clone --depth 1 --filter=blob:none https://github.com/sayfelanjos/self_managed-k8s-cluster-on-azure /tmp/control-plane-setup
-# cd /tmp/control-plane-setup
-# git sparse-checkout init --no-cone
-# git sparse-checkout set ansible
+# Upgrade pip to the latest version
+pip install --upgrade pip
+
+# Install Ansible core
+pip install ansible-core=="${ansible_core_version}"
+
+# Add ansible-core to PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# Install the Azure collection
+ansible-galaxy collection install azure.azcollection
+
+# Install Python dependencies
+pip install -r "$HOME/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt"
 
 # Run the Ansible playbook
 # The --connection=local flag tells Ansible to run on the machine itself.
-ansible-playbook -i  /root/ansible/inventories/hosts/hosts.ini \
-  --connection=local \
-  --extra-vars pod_network_cidr=${pod_network_cidr} \
-  --extra-vars control_plane_endpoint=${control_plane_endpoint} \
-  --extra-vars kv_uri=${kv_uri} \
-  /root/ansible/ansible/setup_control_plane.yaml
+ansible-playbook -i /var/tmp/ansible/inventories/hosts/hosts.ini \
+    --extra-var "ansible_python_interpreter=$(which python3)" \
+    --extra-var "resource_group_name=self-managed-k8s-cluster-rg" \
+    --extra-var "control_plane_endpoint=${control_plane_endpoint}" \
+    --extra-var "pod_network_cidr=${pod_network_cidr}" \
+    --extra-var "ansible_user=${ansible_user}" \
+    --extra-var "kv_name=${kv_name}" \
+    --extra-var "uai_client_id=${uai_client_id}" \
+    --extra-var "subscription_id=${subscription_id}" \
+    /var/tmp/ansible/setup_control_plane.yaml
+
+EOF

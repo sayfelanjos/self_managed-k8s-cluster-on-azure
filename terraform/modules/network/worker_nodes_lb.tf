@@ -26,27 +26,26 @@ resource "azurerm_lb_backend_address_pool" "worker_nodes_bkeapool" {
   loadbalancer_id = azurerm_lb.worker_nodes_lb.id
 }
 
-# # Create a Health Probe for the K8s API Server
-# resource "azurerm_lb_probe" "worker_nodes_probe" {
-#   loadbalancer_id = azurerm_lb.worker_nodes_lb.id
-#   name            = "k8s-api-server-probe"
-#   port            = 6443
-#   request_path    = null # "/healthz" is not needed for TCP probes
-#   protocol        = "Tcp"
-# }
-#
-# # Create the Load Balancing Rule
-# resource "azurerm_lb_rule" "worker_nodes_rule" {
-#   loadbalancer_id                = azurerm_lb.worker_nodes_lb.id
-#   name                           = "k8s-api-server-rule"
-#   protocol                       = "Tcp"
-#   frontend_port                  = 6443
-#   backend_port                   = 6443
-#   frontend_ip_configuration_name = azurerm_public_ip.worker_nodes_lb_pip.name
-#   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.worker_nodes_bkeapool.id]
-#   probe_id                       = azurerm_lb_probe.worker_nodes_probe.id
-#   disable_outbound_snat          = true
-# }
+# Create a Health Probe for the K8s API Server
+resource "azurerm_lb_probe" "worker_nodes_probe" {
+  loadbalancer_id = azurerm_lb.worker_nodes_lb.id
+  name            = "k8s-worker-health-check-probe"
+  port            = 10254
+  protocol        = "Tcp"
+}
+
+# Create the Load Balancing Rule
+resource "azurerm_lb_rule" "worker_nodes_rule" {
+  loadbalancer_id                = azurerm_lb.worker_nodes_lb.id
+  name                           = "k8s-http-rule"
+  protocol                       = "Tcp"
+  frontend_port                  = 80
+  backend_port                   = 80
+  frontend_ip_configuration_name = azurerm_public_ip.worker_nodes_lb_pip.name
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.worker_nodes_bkeapool.id]
+  probe_id                       = azurerm_lb_probe.worker_nodes_probe.id
+  disable_outbound_snat          = true
+}
 
 resource "azurerm_lb_nat_rule" "worker_nodes_nat_rule" {
   resource_group_name            = azurerm_lb.worker_nodes_lb.resource_group_name
