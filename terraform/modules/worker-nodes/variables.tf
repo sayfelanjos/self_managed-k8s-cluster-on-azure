@@ -82,3 +82,6 @@ variable "kv_uri" {
   description = "The URI of the Azure Key Vault."
   type        = string
 }
+variable "k8s_base_node_image_id" {
+  type = string
+}

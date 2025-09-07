@@ -19,6 +19,7 @@ module "k8s-control-plane" {
   pod_network_cidr             = var.pod_network_cidr
   kv_uri                       = var.kv_uri
   control_planes_subnet_nsg_id = module.vnet.control_planes_subnet_nsg_id
+  k8s_base_node_image_id       = var.k8s_base_node_image_id
 }
 
 module "k8s-worker-nodes" {
@@ -41,6 +42,7 @@ module "k8s-worker-nodes" {
   control_plane_endpoint       = module.vnet.control_plane_endpoint
   pod_network_cidr             = var.pod_network_cidr
   kv_uri                       = var.kv_uri
+  k8s_base_node_image_id       = var.k8s_base_node_image_id
 }
 
 module "vnet" {

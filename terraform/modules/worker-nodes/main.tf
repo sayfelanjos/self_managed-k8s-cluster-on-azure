@@ -24,7 +24,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "k8s_worker_nodes" {
     type = "SystemAssigned"
   }
 
-  source_image_id = "/subscriptions/5c61423a-be60-4fbb-a575-7999e5429920/resourceGroups/k8s-image-gallery-rg/providers/Microsoft.Compute/galleries/k8simagegallery/images/k8s-base-node-image/versions/1.0.0"
+  source_image_id = var.k8s_base_node_image_id
 
   os_disk {
     caching                   = var.os_disk_caching

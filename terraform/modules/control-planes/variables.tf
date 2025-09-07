@@ -89,3 +89,7 @@ variable "control_planes_subnet_nsg_id" {
   type        = string
   description = "The ID of the network security group for the master nodes."
 }
+
+variable "k8s_base_node_image_id" {
+  type = string
+}

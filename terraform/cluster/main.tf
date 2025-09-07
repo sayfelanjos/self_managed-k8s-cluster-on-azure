@@ -29,4 +29,5 @@ module "k8s-cluster" {
   os_disk_storage_account_type           = var.os_disk_storage_account_type
   pod_network_cidr                       = var.pod_network_cidr
   kv_uri                                 = azurerm_key_vault.kv.vault_uri
+  k8s_base_node_image_id                 = var.k8s_base_node_image_id
 }
